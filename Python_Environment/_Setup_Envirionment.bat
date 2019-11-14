@@ -29,6 +29,7 @@ SET HOME_DIRECTORY=%~dp0
 ::PYTHON VERSIONS
 SET PYTHON35X32=C:\Users\%USERNAME%\AppData\Local\Programs\Python\Python35-32
 SET PYTHON36X64=C:\Users\%USERNAME%\AppData\Local\Programs\Python\Python36
+SET PYTHON37X64=C:\Users\%USERNAME%\AppData\Local\Programs\Python\Python37
 SET PYTHON37X32=C:\Users\%USERNAME%\AppData\Local\Programs\Python\Python37-32
 SET PYTHON38X64=C:\Users\%USERNAME%\AppData\Local\Programs\Python\Python38
 ::===========================================================================
@@ -114,6 +115,45 @@ GOTO NOPYTHON37X32
 echo.
 echo.
 
+::============================================================================
+::CHECK IF 3.7.0 x64 IS INSTALLED
+call :colorEcho b0 "CHECK PYTHON 3.7.0 x64"
+echo.
+echo F | xcopy /y /e /s /c %HOME_DIRECTORY%requirements.txt %PYTHON37X64%\Scripts\requirements.txt
+IF NOT EXIST %PYTHON37X64% GOTO NOPYTHON37X64
+cd %PYTHON37X64%
+
+::Update PIP Install
+IF EXIST python.exe (
+call :colorEcho 0a "PYTHON.EXE FOUND"
+echo.
+python.exe -m pip install --upgrade pip
+) ELSE (
+call :colorEcho 0c "PYTHON.EXE NOT FOUND - UNABLE TO UPDATE PIP"
+echo.
+)
+
+cd %PYTHON37X64%\Scripts
+IF EXIST pip3.exe (
+call :colorEcho 0a "PIP3.EXE FOUND"
+echo.
+::LIST PACKAGES TO INSTALL HERE
+pip3.exe install -r requirements.txt
+
+
+call :colorEcho a0 "SUCCESSFULLY UPDATED"
+echo.
+
+) ELSE (
+call :colorEcho 0c "PIP3.EXE MISSING - CHECK PATHS - PYTHON VERSION NOT UPDATED"
+echo.
+GOTO NOPYTHON37X64
+)
+:NOPYTHON37X64
+::============================================================================
+
+echo.
+echo.
 
 ::============================================================================
 ::CHECK IF 3.8.0 x64 IS INSTALLED
