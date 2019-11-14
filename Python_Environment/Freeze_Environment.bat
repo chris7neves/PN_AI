@@ -25,16 +25,25 @@ echo.
 ::===========================================================================
 :: SET PATHS HERE
 SET HOME_DIRECTORY=%~dp0
+
+::PYTHON VERSIONS
+SET PYTHON35X32=C:\Users\%USERNAME%\AppData\Local\Programs\Python\Python35-32
+SET PYTHON36X64=C:\Users\%USERNAME%\AppData\Local\Programs\Python\Python36
+SET PYTHON37X64=C:\Users\%USERNAME%\AppData\Local\Programs\Python\Python37
+SET PYTHON37X32=C:\Users\%USERNAME%\AppData\Local\Programs\Python\Python37-32
+SET PYTHON38X64=C:\Users\%USERNAME%\AppData\Local\Programs\Python\Python38
 ::===========================================================================
 
 
 ::============================================================================
-call :colorEcho b0 "FREEZING PYTHON ENVIRONMENT"
+call :colorEcho b0 "FREEZING PYTHON ENVIRONMENT VERSION 37x64"
 echo.
-
+cd %PYTHON37X64%\Scripts
 ::LIST PACKAGES TO INSTALL HERE
 pip3.exe freeze > requirements.txt
 
+echo F | xcopy /y /e /s /c %PYTHON36X64%\Scripts\requirements.txt %HOME_DIRECTORY%requirements.txt
+rm -rf requirements.txt
 call :colorEcho a0 "REQUIREMENTS FILE CREATED"
 echo.
 
