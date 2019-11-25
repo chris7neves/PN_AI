@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.image as img
 import openpyxl
 
 
@@ -11,11 +12,16 @@ def generate_heat_map(excelFile, sheetNumber, trailNumber):
     worksheet = wb[f'Sheet{sheetNumber}']
     x, y = get_coordinate_arrays(worksheet, row_start, column_start)
 
-    heatmap, xedges, yedges = np.histogram2d(x, y, bins=30)
-    extent = [0, 1, 0, 1]
+    heatmap, xedges, yedges = np.histogram2d(x, y, bins=80)
+    heatmap_extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
+    image_extent = [0, 1, 0, 1]
+
+    #Image overlay
+    face_image = img.imread(f'Excel_Files\\FrontFront.jpg')
 
     plt.clf()
-    plt.imshow(heatmap.T, extent=extent, origin='lower')
+    plt.imshow(heatmap.T, extent=heatmap_extent, origin='lower')
+    plt.imshow(face_image, extent=image_extent, origin='upper', cmap='gray', interpolation='none', alpha=0.3)
     plt.show()
 
 
@@ -35,7 +41,7 @@ def get_coordinate_arrays(worksheet, rowStart, columnStart):
             else:
                 y_coord = float(cell.value)
 
-            if x_coord <= 0 or y_coord <= 0:
+            if x_coord <= 0.05 or y_coord <= 0.05:
                 break
             x_coordinate_array.append(x_coord)
             y_coordinate_array.append(y_coord)
@@ -44,7 +50,9 @@ def get_coordinate_arrays(worksheet, rowStart, columnStart):
 
 
 if __name__ == "__main__":
-    print("-----------HEAT MAP GENERATOR-----------")
+    print("-----------HEAT MAP GENERATOR POC-----------")
+    print("IMPORTANT NOTE: The image overlay and the respective coordinates are not accurate.")
+    print("THIS IS JUST A POC")
     excelFile = input("Enter the Excel file name you would like to generate a heatmap for:\n")
     sheetNumber = int(input("Enter the sheet number you would like to generate a heatmap for (1-11):\n"))
     trailNumber = int(input("Enter the trial number you would like to generate a heatmap for (1-8):\n"))

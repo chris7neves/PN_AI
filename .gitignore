@@ -13,6 +13,6 @@ __pycache__/
 Data/
 
 # Environments - Removing Pycharm IDE specific files
-Python_Environment/.idea*
-Python_Environment/__pycache__*
+.idea*
+__pycache__*
 

@@ -15,6 +15,7 @@ keras = "*"
 beautifulsoup4 = "*"
 requests = "*"
 openpyxl = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.7"
