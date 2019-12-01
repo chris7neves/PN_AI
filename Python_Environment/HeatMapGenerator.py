@@ -2,13 +2,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as img
 import openpyxl
+import os
 
 
 def generate_heat_map(excelFile, sheetNumber, trailNumber):
     row_start = 18
     column_start = 16 + (trailNumber - 1) * 3
+    PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    ExcelFilesPath = PATH + '\\' + 'Excel_Files'
 
-    wb = openpyxl.load_workbook(f'Excel_Files\\{excelFile}.xlsm')
+    wb = openpyxl.load_workbook(ExcelFilesPath + '\\' + excelFile + '.xlsm')
     worksheet = wb[f'Sheet{sheetNumber}']
     x, y = get_coordinate_arrays(worksheet, row_start, column_start)
 
@@ -17,7 +20,7 @@ def generate_heat_map(excelFile, sheetNumber, trailNumber):
     image_extent = [0, 1, 0, 1]
 
     #Image overlay
-    face_image = img.imread(f'Excel_Files\\FrontFront.jpg')
+    face_image = img.imread(ExcelFilesPath + '\\FrontFront.jpg')
 
     plt.clf()
     plt.imshow(heatmap.T, extent=heatmap_extent, origin='lower')
