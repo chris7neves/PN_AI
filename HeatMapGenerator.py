@@ -10,17 +10,22 @@ TRIAL_TYPES = ["Practice Front-Front", "Front-Front Condition 1M", "Front-Front 
                "Inverted 1F"]
 
 
-def generate_heat_map(excelFile, sheetNumber, trialNumber):
-    row_start = 18
-    column_start = 16 + (trialNumber - 1) * 3
+def generate_heat_map(excelFile, sheetNumber):
 
     wb = openpyxl.load_workbook(f'Data\\{excelFile}.xlsm')
     worksheet = wb[f'Sheet{sheetNumber}']
-    x, y = get_coordinate_arrays(worksheet, row_start, column_start)
+    fig, axs = plt.subplots(3, 3)
+    trialNumber = 1
 
-    plt.plot(x, y, 'k.', markersize=5)
-    plt.title(f"Scatter plot of test subject {excelFile} - {TRIAL_TYPES[sheetNumber-1]} - Trail #{trialNumber}")
-
+    for ax, in zip(axs.flatten()):
+        row_start = 18
+        column_start = 16 + (trialNumber - 1) * 3
+        x, y = get_coordinate_arrays(worksheet, row_start, column_start)
+        ax.plot(x, y, 'k.', markersize=5)
+        trialNumber += 1
+        if trialNumber == 9:
+            break
+    fig.suptitle(f"Test subject {excelFile} - {TRIAL_TYPES[sheetNumber-1]}")
     plt.show()
 
 
@@ -58,7 +63,6 @@ def get_coordinate_arrays(worksheet, rowStart, columnStart):
 
 if __name__ == "__main__":
     print("-----------HEAT MAP GENERATOR POC-----------")
-    excelFile = input("Enter the Excel file name from the Data folder you would like to generate a heatmap for:\n")
-    sheetNumber = int(input("Enter the sheet number you would like to generate a heatmap for (1-11):\n"))
-    trialNumber = int(input("Enter the trial number you would like to generate a heatmap for (1-8):\n"))
-    generate_heat_map(excelFile, sheetNumber, trialNumber)
+    excelFile = input("Enter the Excel file name from the Data folder you would like to generate scatter plots for:\n")
+    sheetNumber = int(input("Enter the sheet number you would like to generate scatter plots for (1-11):\n"))
+    generate_heat_map(excelFile, sheetNumber)
