@@ -11,6 +11,7 @@ __pycache__/
 
 # Data - We do not want to check in the data into the repo
 Data/
+Images/
 
 # Environments - Removing Pycharm IDE specific files
 .idea*
