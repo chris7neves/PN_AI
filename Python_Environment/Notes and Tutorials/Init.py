@@ -6,13 +6,13 @@
 import sys
 import numpy
 
-import timeit  # Timing librarym
 import time
 
-import tensorflow as tf
 from sklearn import tree
 
-import MassClass
+import MassCLass
+
+
 
 
 # -------------------------
