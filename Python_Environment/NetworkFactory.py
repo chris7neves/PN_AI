@@ -6,3 +6,6 @@
 # performance of each network.                                      #
 #---------------------------------------------------------------------
 
+import imports
+
+def networkfactory(params, dloader):
