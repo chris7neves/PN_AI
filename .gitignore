@@ -17,3 +17,6 @@ Images/
 .idea*
 __pycache__*
 
+#Pycharm Garbage
+CapstoneNeuralNet/Dependencies/*
+

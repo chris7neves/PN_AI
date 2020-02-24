@@ -2,6 +2,7 @@
 # This file will deal with the import of the data, cleaning        #
 # and manipulation of the heat map images, resolution changes,      #
 # and preparation of the images before being used by the network.   #
+# SQL fetches
 #---------------------------------------------------------------------
 
 # Imports
