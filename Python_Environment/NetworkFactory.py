@@ -6,7 +6,7 @@
 # performance of each network.                                      #
 #---------------------------------------------------------------------
 
-import imports
 
 class NetworkFactory:
     def __init__(self, params, dloader):
+
