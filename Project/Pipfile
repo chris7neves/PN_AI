@@ -8,16 +8,9 @@ verify_ssl = true
 [packages]
 matplotlib = "*"
 numpy = "*"
-scikit-learn = "*"
-tensorboard = "*"
-tensorflow = "*"
-keras = "*"
-beautifulsoup4 = "*"
-requests = "*"
-openpyxl = "*"
-pillow = "*"
-torch = "==1.3.1"
 pandas = "*"
+openpyxl = "*"
+scipy = "*"
 
 [requires]
 python_version = "3.7"
