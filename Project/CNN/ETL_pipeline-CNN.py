@@ -8,6 +8,8 @@
 # ---------- Imports ---------- #
 #from .importsCNN import *
 import os
+import numpy as np
+import cv2
 # ----------------------------- #
 
 width = 1
@@ -19,6 +21,24 @@ height = 1
 # --depending on array format, unsqueeze the dim=1 and insert a 1 for ASD or a 0 for TYP
 # ---Create a tensor containing these array-diagnosis pairs
 
+img_folder_name = input("Enter the folder name containing the image folders: ")
+
 cwd = os.getcwd()
+filename = os.path.basename(__file__)
+dir = cwd.replace(filename, '') + '/'
+img_folder_path = dir + img_folder_name + "/"
+
+print(img_folder_path)
+
+data = []
+
+for(root, dirs, files) in os.walk(img_folder_path, topdown=True): # convert pic to array and append to list
+    if dirs[0] == 'A': #TODO Double check to see if all asd have A as first char, and all TYPE do not
+        label = 1 # 1 is the label for ASD
+    else:
+        label = 0 # 0 is the label for TYP
+    img_path = img_folder_path + "/" + dirs + "/" + files
+    data.append([label, cv2.imread(img_path, 0)])
 
 
+data_np = np.array(data)
