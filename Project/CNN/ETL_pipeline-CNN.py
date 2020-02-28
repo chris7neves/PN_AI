@@ -21,24 +21,40 @@ height = 1
 # --depending on array format, unsqueeze the dim=1 and insert a 1 for ASD or a 0 for TYP
 # ---Create a tensor containing these array-diagnosis pairs
 
+print("Please make sure that the only folders found in the Image data directory\n")
+print("are either A or T folders filled with their corresponding images.")
+
 img_folder_name = input("Enter the folder name containing the image folders: ")
 
 cwd = os.getcwd()
-filename = os.path.basename(__file__)
-dir = cwd.replace(filename, '') + '/'
-img_folder_path = dir + img_folder_name + "/"
-
-print(img_folder_path)
+filename = os.path.basename(__file__)   # Takes the filename of the python script its running in
+dir = cwd.replace(filename, '')
+img_folder_path = os.path.join(dir,img_folder_name)
+print("Looking in directory: " + img_folder_path)
 
 data = []
 
-for(root, dirs, files) in os.walk(img_folder_path, topdown=True): # convert pic to array and append to list
-    if dirs[0] == 'A': #TODO Double check to see if all asd have A as first char, and all TYPE do not
-        label = 1 # 1 is the label for ASD
-    else:
-        label = 0 # 0 is the label for TYP
-    img_path = img_folder_path + "/" + dirs + "/" + files
-    data.append([label, cv2.imread(img_path, 0)])
+for root, dirs, files in os.walk(img_folder_path, topdown=True): # convert pic to array and append to list
+    for directory in dirs:
+        print(directory)
+        subdir_path = os.path.join(root, directory)
+        if directory[0] == 'A':
+            label = 1  # 1 is the label for ASD "A"
+        elif directory[0] == 'T':
+            label = 0  # 0 is the label for TYP "T"
+        for _, _, subdir_files in os.walk(subdir_path, topdown=True):
+            for file in subdir_files:
+                img_path = os.path.join(img_folder_path, directory, file)
+                print("img_path: " + img_path)
+                data.append([label, cv2.imread(img_path, 0)])
 
 
 data_np = np.array(data)
+
+# The following lines are for debugging purposes
+
+# print(data_np[0][1]) # Prints out the first image in the array
+# np.savetxt("arrayOut.txt", data_np[0][1]) # Saves the array image to a text file for debugging
+# cv2.imwrite('testimage.jpg', data_np[0][1]) # write the array to a grayscale image
+# cv2.imshow('image', data_np[0][1]) # displays the image
+# cv2.waitKey() # waits for user input before closing image
