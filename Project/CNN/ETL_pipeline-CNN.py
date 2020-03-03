@@ -10,6 +10,9 @@
 import os
 import numpy as np
 import cv2
+import torch
+import torch.utils.data
+import random
 # ----------------------------- #
 
 width = 1
@@ -21,7 +24,7 @@ height = 1
 # --depending on array format, unsqueeze the dim=1 and insert a 1 for ASD or a 0 for TYP
 # ---Create a tensor containing these array-diagnosis pairs
 
-print("Please make sure that the only folders found in the Image data directory\n")
+print("Please make sure that the only folders found in the Image data directory")
 print("are either A or T folders filled with their corresponding images.")
 
 img_folder_name = input("Enter the folder name containing the image folders: ")
@@ -32,29 +35,71 @@ dir = cwd.replace(filename, '')
 img_folder_path = os.path.join(dir,img_folder_name)
 print("Looking in directory: " + img_folder_path)
 
-data = []
+# data = []
 
-for root, dirs, files in os.walk(img_folder_path, topdown=True): # convert pic to array and append to list
-    for directory in dirs:
-        print(directory)
-        subdir_path = os.path.join(root, directory)
-        if directory[0] == 'A':
-            label = 1  # 1 is the label for ASD "A"
-        elif directory[0] == 'T':
-            label = 0  # 0 is the label for TYP "T"
-        for _, _, subdir_files in os.walk(subdir_path, topdown=True):
-            for file in subdir_files:
-                img_path = os.path.join(img_folder_path, directory, file)
-                print("img_path: " + img_path)
-                data.append([label, cv2.imread(img_path, 0)])
+# for root, dirs, files in os.walk(img_folder_path, topdown=True): # convert pic to array and append to list
+#     for directory in dirs:
+#         print(directory)
+#         subdir_path = os.path.join(root, directory)
+#         if directory[0] == 'A':
+#             label = 1  # 1 is the label for ASD "A"
+#         elif directory[0] == 'T':
+#             label = 0  # 0 is the label for TYP "T"
+#         for _, _, subdir_files in os.walk(subdir_path, topdown=True):
+#             for file in subdir_files:
+#                 img_path = os.path.join(img_folder_path, directory, file)
+#                 print("img_path: " + img_path)
+#                 data.append([label, cv2.imread(img_path, 0)])
 
-
-data_np = np.array(data)
+# data_np = np.array(data)
 
 # The following lines are for debugging purposes
 
 # print(data_np[0][1]) # Prints out the first image in the array
-# np.savetxt("arrayOut.txt", data_np[0][1]) # Saves the array image to a text file for debugging
+# np.savetxt("arrayOut.txt",data_np[0][1], fmt='%.3i') # Saves the array image to a text file for debugging
 # cv2.imwrite('testimage.jpg', data_np[0][1]) # write the array to a grayscale image
 # cv2.imshow('image', data_np[0][1]) # displays the image
 # cv2.waitKey() # waits for user input before closing image
+
+
+class HeatMapDST(torch.utils.data.Dataset):
+    """Heat Map Dataset"""
+
+    def __init__(self, images_path): # Needs testing
+        self.images_path = images_path
+        self.data = []
+
+        for root, dirs, files in os.walk(self.images_path, topdown=True):  # convert pic to array and append to list
+            for directory in dirs:
+                print(directory)
+                subdir_path = os.path.join(root, directory)
+                if directory[0] == 'A':
+                    label = 1  # 1 is the label for ASD "A"
+                elif directory[0] == 'T':
+                    label = 0  # 0 is the label for TYP "T"
+                for _, _, subdir_files in os.walk(subdir_path, topdown=True):
+                    for file in subdir_files:
+                        img_path = os.path.join(img_folder_path, directory, file)
+                        print("img_path: " + img_path)
+                        self.data.append([label, cv2.imread(img_path, 0)])
+        self.data_np = np.array(self.data)
+
+    def __len__(self): # Needs testing
+        _, _, img_files = os.walk(self.images_path) # Test this out to see if it returns properly
+        return len(img_files)
+
+    def __getitem__(self, index): # Needs Testing
+        label = self.data_np[index][0]
+        image = self.data_np[index][1]
+        sample = {'label': label, 'image': image}
+        return sample
+
+    def showImage(self, index=0, rand=False):   # Needs testing
+        if rand:
+            random.seed()
+            last = self.__len__()
+            temp_im = self.data_np[random.randint(0, last)][1]
+            cv2.imshow('Image', temp_im)
+
+
+
