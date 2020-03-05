@@ -63,15 +63,15 @@ print("Looking in directory: " + img_folder_path)
 
 
 class HeatMapDST(torch.utils.data.Dataset):
-    """Heat Map Dataset"""
+    """Heat Map Dataset Class"""
 
     def __init__(self, images_path): # Needs testing
         self.images_path = images_path
         self.data = []
-
+        print("Storing images...")
         for root, dirs, files in os.walk(self.images_path, topdown=True):  # convert pic to array and append to list
             for directory in dirs:
-                print(directory)
+                # print(directory)
                 subdir_path = os.path.join(root, directory)
                 if directory[0] == 'A':
                     label = 1  # 1 is the label for ASD "A"
@@ -80,26 +80,35 @@ class HeatMapDST(torch.utils.data.Dataset):
                 for _, _, subdir_files in os.walk(subdir_path, topdown=True):
                     for file in subdir_files:
                         img_path = os.path.join(img_folder_path, directory, file)
-                        print("img_path: " + img_path)
+                        # print("img_path: " + img_path)
                         self.data.append([label, cv2.imread(img_path, 0)])
         self.data_np = np.array(self.data)
+        print("Images stored.")
 
-    def __len__(self): # Needs testing
-        _, _, img_files = os.walk(self.images_path) # Test this out to see if it returns properly
-        return len(img_files)
+    def __len__(self): # works
+        return len(self.data_np)
 
-    def __getitem__(self, index): # Needs Testing
+    def __getitem__(self, index): # works
         label = self.data_np[index][0]
         image = self.data_np[index][1]
         sample = {'label': label, 'image': image}
         return sample
 
-    def showImage(self, index=0, rand=False):   # Needs testing
+    def showImage(self, index=0, rand=False):   # works
         if rand:
             random.seed()
             last = self.__len__()
             temp_im = self.data_np[random.randint(0, last)][1]
             cv2.imshow('Image', temp_im)
+        else:
+            img = self.__getitem__(index)
+            img_name = "Label: " + str(img['label'])
+            print(img_name)
+            cv2.imshow(img_name, img['image'])
+            cv2.waitKey()
 
 
 
+hm = HeatMapDST(img_folder_path)
+hm.showImage()
+print(hm.__len__())
