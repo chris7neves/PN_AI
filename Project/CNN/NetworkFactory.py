@@ -7,8 +7,14 @@
 # E.G. Learning rates/Epoch numbers for networks                    #
 #---------------------------------------------------------------------
 
+import torch.nn as nn
 
-
-class NetworkFactory:
+class NetworkFactory: #TODO: implement the factory creator class
     def __init__(self, params, dloader):
 
+
+
+
+
+
+class basicCNN(nn.Module):

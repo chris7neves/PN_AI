@@ -13,6 +13,7 @@ openpyxl = "*"
 scipy = "*"
 pyodbc = "*"
 opencv-python = "*"
+scikit-learn = "*"
 
 [requires]
 python_version = "3.7"

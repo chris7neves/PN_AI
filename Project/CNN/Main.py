@@ -6,3 +6,13 @@
 # architectures. This file will also display the results and        #
 # performance metrics of the various defined networks.              #
 #---------------------------------------------------------------------
+
+import matplotlib
+
+import ETL_pipeline_CNN as pipeline
+
+batch_sz = 10
+
+
+
+
