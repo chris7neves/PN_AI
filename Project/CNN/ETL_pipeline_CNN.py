@@ -77,33 +77,42 @@ def create_train_test(images_path, to_tensor=False):
 class HeatMapDST(torch.utils.data.Dataset):
     """Heat Map Dataset Class"""
 
-    def __init__(self, train_lab, train_feat, test_lab, test_feat, mode="train"): #TODO: Rework and delete image array creation
-        self.train_lab = train_lab
+    def __init__(self, data, labels, train=True): # Need to test
+        if train:
+            self.data_category = "Training Data"
+            self.train = True
+        else:
+            self.data_category = "Validation Data"
+            self.train = False
+        self.data = torch.from_numpy(data)
+        self.labels = torch.from_numpy(labels)
 
-    def __len__(self): # works
-        return len(self.data_np)
+    def __len__(self): # Need to test
+        if len(self.data) != len(self.data):
+            print("Error with label or data length in HeatMapDST class.")
+            return 0
+        return len(self.data)
 
-    def __getitem__(self, index): # works
-        label = self.data_np[index][0]
-        image = self.data_np[index][1]
-        #sample = {'label': label, 'image': image}
+    def __getitem__(self, index): # Need to test
+        label = self.label[index]
+        image = self.data[index]
         return label, image
 
-    def show_image(self, index=0, rand=False):  # works
+    def show_image(self, index=0, rand=False): # Need to test
         if rand:
             random.seed()
             last = self.__len__()
-            temp_im = self.data_np[random.randint(0, last)][1]
+            temp_im = self.data[random.randint(0, last)]
             cv2.imshow('Image', temp_im)
         else:
-            img = self.__getitem__(index)
-            img_name = "Label: " + str(img['label'])
+            lab, img = self.__getitem__(index)
+            img_name = "Label: " + str(lab)
             print(img_name)
-            cv2.imshow(img_name, img['image'])
+            cv2.imshow(img_name, img)
             cv2.waitKey()
 
 
-label_train, label_test, feat_train, feat_test = create_train_test(img_folder_path, to_tensor=True) #TODO: Test to see if the function creates equally balances train and test sets
+label_train, label_test, feat_train, feat_test = create_train_test(img_folder_path, to_tensor=False) #TODO: Test to see if the function creates equally balances train and test sets
 
 
 
