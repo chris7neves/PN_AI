@@ -166,15 +166,6 @@ cv2.waitKey() # waits for user input before closing image
 
 #################################
 
-
-# The following lines are for debugging purposes
-
-# print(data_np[0][1]) # Prints out the first image in the array
-# np.savetxt("arrayOut.txt",data_np[0][1], fmt='%.3i') # Saves the array image to a text file for debugging
-# cv2.imwrite('testimage.jpg', data_np[0][1]) # write the array to a grayscale image
-# cv2.imshow('image', data_np[0][1]) # displays the image
-# cv2.waitKey() # waits for user input before closing image
-
 # Creating the Heat Map dataset
 #hm_dataset = HeatMapDST(img_folder_path)
 #hm_dataset.show_image()
