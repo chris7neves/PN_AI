@@ -38,6 +38,32 @@ directory = cwd.replace(filename, '')
 img_folder_path = os.path.join(directory, img_folder_name)
 print("Looking in directory: " + img_folder_path)
 
+def create_non_split(images_path):
+    '''Creates a non split set for split set validation purposes'''
+    print("Storing images")
+    data_feature_list = []
+    data_label_list = []
+    for root, dirs, files in os.walk(images_path, topdown=True):  # convert pic to array and append to list
+        for directory in dirs:
+            # print(directory)
+            subdir_path = os.path.join(root, directory)
+            if directory[0] == 'A':
+                label = 1  # 1 is the label for ASD "A"
+            elif directory[0] == 'T':
+                label = 0  # 0 is the label for TYP "T"
+            for _, _, subdir_files in os.walk(subdir_path, topdown=True):
+                for file in subdir_files:
+                    img_path = os.path.join(img_folder_path, directory, file)
+                    # print("img_path: " + img_path)
+                    data_feature_list.append(np.array(cv2.imread(img_path,0)))
+                    data_label_list.append(label)
+
+    data_feature_list_np = np.array(data_feature_list)
+    data_label_list_np = np.array(data_label_list, dtype=np.uint8)
+
+    print("Images stored as Numpy Arrays.")
+
+    return data_feature_list_np, data_label_list_np
 
 def create_train_test(images_path, to_tensor=False):
     print("Storing images")
@@ -114,7 +140,31 @@ class HeatMapDST(torch.utils.data.Dataset):
 
 label_train, label_test, feat_train, feat_test = create_train_test(img_folder_path, to_tensor=False) #TODO: Test to see if the function creates equally balances train and test sets
 
+######### TESTING LINES #########
 
+nonsplit_data, nonsplit_label = create_non_split(img_folder_path)
+
+split_train_label, split_test_label, split_train_data, split_train_data = create_train_test(img_folder_path, to_tensor=False)
+
+
+ones = sum([i == 1 for i in nonsplit_label])
+zeros = len(nonsplit_label) - ones
+print("There are %d ones and %d zeros is the nonsplit set." % (ones, zeros))
+
+
+cv2.imwrite('nonsplit.jpg', nonsplit_data[0]) # write the array to a grayscale image
+cv2.imshow('image', nonsplit_data[0]) # displays the image
+print('nonsplit label: ' + str(nonsplit_label[0]))
+cv2.waitKey() # waits for user input before closing image
+
+cv2.imwrite('split.jpg', nonsplit_data[0]) # write the array to a grayscale image
+cv2.imshow('image', nonsplit_data[0]) # displays the image
+print('nonsplit label: ' + str(nonsplit_label[0]))
+cv2.waitKey() # waits for user input before closing image
+
+
+
+#################################
 
 
 # The following lines are for debugging purposes
@@ -129,9 +179,6 @@ label_train, label_test, feat_train, feat_test = create_train_test(img_folder_pa
 #hm_dataset = HeatMapDST(img_folder_path)
 #hm_dataset.show_image()
 
-# Verifying length of the full dataset
-#print(hm_dataset.__len__())
-
 # Defining training and validation set sizes.
 #train_size = 0.8 * hm_dataset.__len__()
 #val_size = 0.2 * hm_dataset.__len__()
@@ -141,7 +188,7 @@ label_train, label_test, feat_train, feat_test = create_train_test(img_folder_pa
 #trainset, valset = torch.utils.data.random_split(hm_dataset, [train_size, val_size])
 
 # Defining batch size for dataloader
-batch_sz = 10
+#batch_sz = 10
 
 # Creating the dataloaders
 #train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_sz, shuffle=True)

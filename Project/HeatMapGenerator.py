@@ -107,4 +107,6 @@ if __name__ == "__main__":
         ensure_dir(f"Images\\{excel_file}\\")
         for sheet_number in range(1, 12):
             for trial_number in range(1, 9):
+                print("Sheet: {}".format(sheet_number))
+                print("Trial: {}".format(trial_number))
                 generate_heat_map(wb, excel_file, sheet_number, trial_number)
