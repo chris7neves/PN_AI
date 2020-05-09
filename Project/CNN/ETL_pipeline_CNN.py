@@ -186,3 +186,6 @@ cv2.waitKey() # waits for user input before closing image
 #val_loader = torch.utils.data.DataLoader(valset, batch_size=batch_sz, shuffle=True)
 
 
+# THIS WAS MADE ON TEST CHRIS #
+
+
