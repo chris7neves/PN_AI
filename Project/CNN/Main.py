@@ -14,5 +14,7 @@ import ETL_pipeline_CNN as pipeline
 batch_sz = 10
 
 
+# peepeepepepepepep
+
 
 
