@@ -16,7 +16,7 @@ def log_message(message):
 
 
 def create_log_file():
-    """Creates directory and file for logs if it doesn't exist yet."""
+    """Creates log file directory and file for logs if it doesn't exist yet."""
 
     # Creates directory
     os.mkdir(LOGS_FILEPATH.rsplit('/', 1)[0] + '/')
@@ -27,6 +27,7 @@ def create_log_file():
 
 
 def ensure_dir(file_path):
+    """Ensures that a directory exists given a file_path to the directory."""
     directory = os.path.dirname(file_path)
     if not os.path.exists(directory):
         os.makedirs(directory)
