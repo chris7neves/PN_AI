@@ -119,42 +119,73 @@ class HeatMapDST(torch.utils.data.Dataset):
         return len(self.data)
 
     def __getitem__(self, index): # Need to test
-        label = self.label[index]
+        label = self.labels[index]
         image = self.data[index]
         return label, image
+
+    def get_labels(self):
+        return self.labels
+
+    def get_features(self):
+        return self.data
 
     def show_image(self, index=0, rand=False): # Need to test
         if rand:
             random.seed()
             last = self.__len__()
             temp_im = self.data[random.randint(0, last)]
-            cv2.imshow('Image', temp_im)
+            cv2.imshow('Image', temp_im.numpy())
         else:
             lab, img = self.__getitem__(index)
             img_name = "Label: " + str(lab)
             print(img_name)
-            cv2.imshow(img_name, img)
+            cv2.imshow(img_name, img.numpy())
             cv2.waitKey()
 
+def get_dataloader(dset, batch_sz):
+    hm_dloader = torch.utils.data.dataloader(dset, batch_size = batch_sz)
+    return hm_dloader
 
-label_train, label_test, feat_train, feat_test = create_train_test(img_folder_path, to_tensor=False)
-
-######### TESTING LINES #########
+######### Data Initialization #########
 
 nonsplit_data, nonsplit_label = create_non_split(img_folder_path)
 
 split_train_label, split_test_label, split_train_data, split_test_data = create_train_test(img_folder_path, to_tensor=False)
 
+######### Data Verification #########
+
 ones = sum([i == 1 for i in nonsplit_label])
 zeros = len(nonsplit_label) - ones
 print("There are %d ones and %d zeros is the nonsplit set." % (ones, zeros))
 
+split_ones_train_label = sum([i == 1 for i in split_train_label])
+split_zeros_train_label = len(split_train_label) - split_ones_train_label
 
+split_ones_test_label = sum([i == 1 for i in split_test_label])
+split_zeros_test_label = len(split_test_label) - split_ones_test_label
 
+print("There are %d ones and %d zeros is the split training set." % (split_ones_train_label, split_zeros_train_label))
+print("There are %d ones and %d zeros is the split testing set." % (split_ones_test_label, split_zeros_test_label))
 
+######### DataSet Creation #########
 
+train_dset = HeatMapDST(split_train_data, split_train_label, train=True)
+test_dset = HeatMapDST(split_test_data, split_test_label, train=False)
 
+######### DataSet Method Testing #########
 
+print("The training dataset length is: {}".format(train_dset.__len__()))
+print("The testing dataset length is: {}".format(test_dset.__len__()))
+
+im1_label, im1_img = train_dset.__getitem__(3)
+img_name = "im1 Label: {}".format(im1_label)
+#cv2.imshow(img_name, im1_img.numpy())
+#cv2.waitKey()
+
+######## Creating the DataLoader ########
+
+train_loader = get_dataloader(train_dset, batch_sz=10)
+test_loader = get_dataloader(test_dset, batch_sz=10)
 
 
 
