@@ -13,14 +13,42 @@ class SQL_Database:
         self.password = password
         self.drivers  = pyodbc.drivers()
 
-    def Connect(self,string):
+    def Query(self,string):
         cnxn = pyodbc.connect('DRIVER='+self.drivers[0]+';SERVER='+self.server+';DATABASE='+self.database+';UID='+self.username+';PWD='+self.password)
         cursor = cnxn.cursor()
         # Sample select query
         cursor.execute(string)
-        # rows = cursor.fetchall()
+        rowArray = []
         while True:
             row = cursor.fetchone()
             if not row:
                 break
-            print(row)
+            # print(row)
+            rowArray.append(row)
+        return rowArray
+
+    def Participants(self):
+        cnxn = pyodbc.connect('DRIVER=' + self.drivers[0] + ';SERVER=' + self.server + ';DATABASE=' + self.database + ';UID=' + self.username + ';PWD=' + self.password)
+        cursor = cnxn.cursor()
+        cursor.execute("select * from data_headers")
+        rowArray = []
+        while True:
+            row = cursor.fetchone()
+            if not row:
+                break
+            # print(row)
+            rowArray.append(row)
+        return rowArray
+
+    def Results(self, H_AUTO):
+        cnxn = pyodbc.connect('DRIVER=' + self.drivers[0] + ';SERVER=' + self.server + ';DATABASE=' + self.database + ';UID=' + self.username + ';PWD=' + self.password)
+        cursor = cnxn.cursor()
+        cursor.execute(f"select * from data_trials where H_AUTO_KEY = {H_AUTO}")
+        rowArray = []
+        while True:
+            row = cursor.fetchone()
+            if not row:
+                break
+            # print(row)
+            rowArray.append(row)
+        return rowArray
