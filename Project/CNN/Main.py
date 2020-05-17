@@ -69,8 +69,8 @@ torch.set_grad_enabled(True)
 BasicCNN = net.basicCNN()
 optimizer = optim.Adam(BasicCNN.parameters(), lr=0.01)
 
-train_loader = etl.get_dataloader(train_dset, batch_sz=20, shuffle=True)
-test_loader = etl.get_dataloader(test_dset, batch_sz=20, shuffle=True)
+train_loader = etl.get_dataloader(train_dset, batch_sz=5, shuffle=True)
+test_loader = etl.get_dataloader(test_dset, batch_sz=5, shuffle=True)
 
 for epoch in range(10): #TODO: write function to automatically go to next epoch once progress of current epoch plateaus
     total_loss = 0

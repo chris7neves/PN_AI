@@ -22,7 +22,9 @@ class basicCNN(nn.Module):
 
         self.conv1 = nn.Conv2d(in_channels=1, out_channels=7, kernel_size=5)
         self.conv2 = nn.Conv2d(in_channels=7, out_channels=14, kernel_size=5)
+        #TODO: Add more conv layers to reduce dimensionality (due to pooling layers
 
+        post_conv = 0 # Use this variable as a constant in the linear layers so values dont always need to be changed
         self.fc1 = nn.Linear(in_features=14*117*157, out_features=257166)
         self.fc2 = nn.Linear(in_features=257166, out_features=192874) # 25% reduction
         self.fc3 = nn.Linear(in_features=192874, out_features=92437) # 50% reduction
