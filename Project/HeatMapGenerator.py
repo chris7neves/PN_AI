@@ -3,15 +3,14 @@ import numpy as np
 import openpyxl
 import os
 from scipy.ndimage.filters import gaussian_filter
-from datetime import datetime
 
 import IO
 
+HEATMAP_LOGS_FILEPATH = os.getcwd() + "/logs/HeatMapGenerator.log"
 
 TRIAL_TYPES = ["Practice Front-Front", "Front-Front Condition 1M", "Front-Front Condition 2F",
                "Practice FrontSide-SideFront 1", "FrontSide-SideFront 1F", "FrontSide-SideFront 2M",
-               "SideFront-FrontSide 3M", "SideFront-FrontSide 4F", "Practice Inverted 1", "Inverted 1M",
-               "Inverted 1F"]
+               "SideFront-FrontSide 3M", "SideFront-FrontSide 4F", "Practice Inverted 1", "Inverted 1M", "Inverted 1F"]
 
 
 def generate_scatter_plot(wb, excel_file_name, sheet_number):
@@ -46,7 +45,7 @@ def generate_heatmap_image(wb, excel_file_name, sheet_number, trial_number):
     # Specifies excel row and column start of data depending on trial selected.
     row_start = 18
     column_start = 16 + (trial_number - 1) * 3
-    image_filepath = f"Images\\{excel_file_name}\\{TRIAL_TYPES[sheet_number-1]}_Trial{trial_number}.png"
+    image_filepath = f"Images/{excel_file_name}/{TRIAL_TYPES[sheet_number-1]}_Trial{trial_number}.png"
 
     worksheet = wb[f'Sheet{sheet_number}']
     success, x, y = get_coordinate_arrays(worksheet, row_start, column_start)
@@ -62,7 +61,7 @@ def generate_heatmap_image(wb, excel_file_name, sheet_number, trial_number):
         plt.axis('off')
         plt.savefig(image_filepath)
     else:
-        IO.print_and_log(f"Unable to generate heatmap for {excel_file_name} - Sheet: {sheet_number} Trial: {trial_number}")
+        IO.print_and_log(HEATMAP_LOGS_FILEPATH, f"Unable to generate heatmap for {excel_file_name} - Sheet: {sheet_number} Trial: {trial_number}")
 
 
 def generate_heatmap_data(x, y, s, bins):
@@ -78,27 +77,19 @@ def get_coordinate_arrays(worksheet, row_start, column_start):
     y_coordinate_array = []
 
     for row_cells in worksheet.iter_rows(min_row=row_start, min_col=column_start, max_col=column_start + 1):
-        for index, cell in enumerate(row_cells):
-            try:
-                float(cell.value)
-            except ValueError:
-                break
-            if index == 0:
-                x_coord = round(float(cell.value), 2)
-                continue
-            else:
-                y_coord = round(float(cell.value), 2)
+        if not str(row_cells[0].value).replace('.', '', 1).isdigit():
+            continue
 
-            if x_coord <= 0.05 or y_coord <= 0.05:
-                break
+        x_coord = round(float(row_cells[0].value), 2)
+        y_coord = round(float(row_cells[1].value), 2)
 
-            x_coordinate_array.append(x_coord)
-            y_coordinate_array.append(y_coord)
+        if x_coord <= 0.05 or y_coord <= 0.05:
+            continue
 
-    if x_coordinate_array and y_coordinate_array:
-        return True, np.array(x_coordinate_array), np.array(y_coordinate_array)
-    else:
-        return False, x_coordinate_array, y_coordinate_array
+        x_coordinate_array.append(x_coord)
+        y_coordinate_array.append(y_coord)
+
+    return x_coordinate_array and y_coordinate_array, np.array(x_coordinate_array), np.array(y_coordinate_array)
 
 
 def heatmap_cli():
@@ -113,7 +104,7 @@ def heatmap_cli():
 
         excel_file = input("Enter the Excel file name from the Data folder you would like to generate heat maps for:\n")
         sheet_number = int(input("Enter the sheet number you would like to generate scatter plots for (1-11):\n"))
-        wb = openpyxl.load_workbook(f'Data\\{excel_file}.xlsm')
+        wb = openpyxl.load_workbook(f'Data/{excel_file}.xlsm')
         generate_scatter_plot(wb, excel_file, sheet_number)
 
     # -------------HEAT MAP GENERATOR--------------
@@ -121,28 +112,27 @@ def heatmap_cli():
                      "NOTE: Doesn't work on mac and 88 images are generated!! Y/N\n")
 
     if heat_map.lower() == 'y':
-        IO.print_and_log("-----------HEAT MAP GENERATOR-----------")
+        IO.print_and_log(HEATMAP_LOGS_FILEPATH, "-----------HEAT MAP GENERATOR-----------")
         print("Outputs grayscale heatmaps for each sheet / trial number of the selected excel file.")
 
         excel_file = input("Enter the Excel file name from the Data folder you would like to generate heat maps for:\n")
 
-        IO.print_and_log(f"[{datetime.now()}] Starting to generate heatmap files to directory {os.getcwd()}\\Images\\{excel_file}")
+        IO.print_and_log(HEATMAP_LOGS_FILEPATH, f"Starting to generate heatmap files to directory {os.getcwd()}/Images/{excel_file}")
 
-        wb = openpyxl.load_workbook(f'Data\\{excel_file}.xlsm')
-        IO.ensure_dir(f"Images\\{excel_file}\\")
+        wb = openpyxl.load_workbook(f'Data/{excel_file}.xlsm')
+        IO.ensure_filepath_exists(f"Images/{excel_file}/")
 
         for sheet_number in range(1, 12):
             for trial_number in range(1, 9):
-                IO.print_and_log(f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
+                IO.print_and_log(HEATMAP_LOGS_FILEPATH, f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
                 generate_heatmap_image(wb, excel_file, sheet_number, trial_number)
 
-        IO.print_and_log(f"[{datetime.now()}] Finished generating heatmap files.")
+        IO.print_and_log(HEATMAP_LOGS_FILEPATH, f"Finished generating heatmap files.")
 
 
 if __name__ == "__main__":
 
-    if not os.path.isdir(IO.LOGS_FILEPATH.rsplit('/', 1)[0] + '/'):
-        IO.create_log_file()
+    IO.ensure_filepath_exists(HEATMAP_LOGS_FILEPATH)
 
     # TODO: Add functionality to generate heatmap images without needing a command-line interface.
     heatmap_cli()

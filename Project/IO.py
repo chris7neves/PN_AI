@@ -1,32 +1,27 @@
 import os
+from datetime import datetime
 
 
-LOGS_FILEPATH = os.getcwd() + "/logs/HeatMapGenerator.log"
-
-
-def print_and_log(message):
+def print_and_log(logs_filepath, message):
     print(message)
-    log_message(message)
+    log_message(logs_filepath, message)
 
 
-def log_message(message):
+def log_message(logs_filepath, message):
     message += "\n"
-    with open(LOGS_FILEPATH, 'a', errors="ignore") as output_file:
-        output_file.writelines(message)
+    with open(logs_filepath, 'a', errors="ignore") as output_file:
+        output_file.writelines(f"[{datetime.now()}] {message}")
 
 
-def create_log_file():
+def ensure_filepath_exists(file_path):
     """Creates directory and file for logs if it doesn't exist yet."""
 
-    # Creates directory
-    os.mkdir(LOGS_FILEPATH.rsplit('/', 1)[0] + '/')
-
-    # Creating a file at specified location
-    with open(LOGS_FILEPATH, 'w'):
-        pass
-
-
-def ensure_dir(file_path):
+    # Creates directory.
     directory = os.path.dirname(file_path)
     if not os.path.exists(directory):
         os.makedirs(directory)
+
+    # Creates an empty file at a specified location.
+    if not file_path.endswith("/") and not os.path.isfile(file_path):
+        with open(file_path, 'w'):
+            pass
