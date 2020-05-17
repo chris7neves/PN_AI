@@ -52,3 +52,17 @@ class SQL_Database:
             # print(row)
             rowArray.append(row)
         return rowArray
+
+
+    def EyeTrackerData(self, T_AUTO):
+        cnxn = pyodbc.connect('DRIVER=' + self.drivers[0] + ';SERVER=' + self.server + ';DATABASE=' + self.database + ';UID=' + self.username + ';PWD=' + self.password)
+        cursor = cnxn.cursor()
+        cursor.execute(f"select * from data_details where T_AUTO_KEY = {T_AUTO}")
+        rowArray = []
+        while True:
+            row = cursor.fetchone()
+            if not row:
+                break
+            # print(row)
+            rowArray.append(row)
+        return rowArray
