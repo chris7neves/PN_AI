@@ -24,3 +24,4 @@ def diff_check(img1, img2, lab1=None, lab2=None):
         delta = cv2.subtract(img1, img2)
         if cv2.countNonZero(delta) != 0:
             print("The images are not the same.")
+

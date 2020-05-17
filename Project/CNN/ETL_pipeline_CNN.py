@@ -18,15 +18,11 @@ import random
 from sklearn.model_selection import train_test_split
 # ----------------------------- #
 
-width = 1
-height = 1
-
-
 print("Please make sure that the only folders found in the Image data directory")
 print("are either A or T folders filled with their corresponding images.")
 
 #img_folder_name = input("Enter the folder name containing the image folders: ")
-img_folder_name = "Images"
+img_folder_name = "Images" # TODO: make this more robust and prompt user to choose using tkinter
 
 cwd = os.getcwd()
 #print("cwd: "+cwd)
@@ -109,10 +105,10 @@ class HeatMapDST(torch.utils.data.Dataset):
         else:
             self.data_category = "Validation Data"
             self.train = False
-        self.data = torch.from_numpy(data)
+        self.data = torch.unsqueeze(torch.from_numpy(data), 1)
         self.labels = torch.from_numpy(labels)
 
-    def __len__(self): # Need to test
+    def __len__(self):
         if len(self.data) != len(self.labels):
             print("Error with label or data length in HeatMapDST class.")
             return 0
@@ -120,7 +116,7 @@ class HeatMapDST(torch.utils.data.Dataset):
 
     def __getitem__(self, index): # Need to test
         label = self.labels[index]
-        image = self.data[index]
+        image = self.data[index][0]
         return label, image
 
     def get_labels(self):
@@ -132,9 +128,10 @@ class HeatMapDST(torch.utils.data.Dataset):
     def show_image(self, index=0, rand=False): # Need to test
         if rand:
             random.seed()
-            last = self.__len__()
-            temp_im = self.data[random.randint(0, last)]
-            cv2.imshow('Image', temp_im.numpy())
+            last = self.__len__() - 1
+            lab, temp_im = self.__getitem__(random.randint(0, last))
+            cv2.imshow('Label: {}'.format(lab), temp_im.numpy())
+            cv2.waitKey()
         else:
             lab, img = self.__getitem__(index)
             img_name = "Label: " + str(lab)
@@ -143,49 +140,10 @@ class HeatMapDST(torch.utils.data.Dataset):
             cv2.waitKey()
 
 def get_dataloader(dset, batch_sz):
-    hm_dloader = torch.utils.data.dataloader(dset, batch_size = batch_sz)
+    hm_dloader = torch.utils.data.DataLoader(dset, batch_size=batch_sz)
     return hm_dloader
 
-######### Data Initialization #########
 
-nonsplit_data, nonsplit_label = create_non_split(img_folder_path)
-
-split_train_label, split_test_label, split_train_data, split_test_data = create_train_test(img_folder_path, to_tensor=False)
-
-######### Data Verification #########
-
-ones = sum([i == 1 for i in nonsplit_label])
-zeros = len(nonsplit_label) - ones
-print("There are %d ones and %d zeros is the nonsplit set." % (ones, zeros))
-
-split_ones_train_label = sum([i == 1 for i in split_train_label])
-split_zeros_train_label = len(split_train_label) - split_ones_train_label
-
-split_ones_test_label = sum([i == 1 for i in split_test_label])
-split_zeros_test_label = len(split_test_label) - split_ones_test_label
-
-print("There are %d ones and %d zeros is the split training set." % (split_ones_train_label, split_zeros_train_label))
-print("There are %d ones and %d zeros is the split testing set." % (split_ones_test_label, split_zeros_test_label))
-
-######### DataSet Creation #########
-
-train_dset = HeatMapDST(split_train_data, split_train_label, train=True)
-test_dset = HeatMapDST(split_test_data, split_test_label, train=False)
-
-######### DataSet Method Testing #########
-
-print("The training dataset length is: {}".format(train_dset.__len__()))
-print("The testing dataset length is: {}".format(test_dset.__len__()))
-
-im1_label, im1_img = train_dset.__getitem__(3)
-img_name = "im1 Label: {}".format(im1_label)
-#cv2.imshow(img_name, im1_img.numpy())
-#cv2.waitKey()
-
-######## Creating the DataLoader ########
-
-train_loader = get_dataloader(train_dset, batch_sz=10)
-test_loader = get_dataloader(test_dset, batch_sz=10)
 
 
 
