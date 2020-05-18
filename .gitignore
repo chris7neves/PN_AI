@@ -20,4 +20,6 @@ __pycache__*
 
 #Pycharm Garbage
 CapstoneNeuralNet/Dependencies/*
+*.env
+*.exe
 
