@@ -1,7 +1,7 @@
 from SQL import Data_Extract
 import IO
 
-P1 = Data_Extract.SQL_Database('26.105.85.122','PNLab','adm','massimo123')
+P1 = Data_Extract.SQL_Database(IO.os.environ["PNAI_SERVER"],IO.os.environ["PNAI_DATABASE"],IO.os.environ["PNAI_USERNAME"],IO.os.environ["PNAI_PASSWORD"])
 
 print("================================Example 1==============================================")
 array = P1.Query("select * from data_headers")      # Custom Query Call
