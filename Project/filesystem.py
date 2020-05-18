@@ -2,15 +2,20 @@ import os
 from datetime import datetime
 
 
-def print_and_log(logs_filepath, message):
-    print(message)
-    log_message(logs_filepath, message)
+class Logging:
 
+    def __init__(self, file_name):
+        self.path = os.path.dirname(os.path.realpath(__file__)) + "/logs/" + file_name
+        ensure_filepath_exists(self.path)
 
-def log_message(logs_filepath, message):
-    message += "\n"
-    with open(logs_filepath, 'a', errors="ignore") as output_file:
-        output_file.writelines(f"[{datetime.now()}] {message}")
+    def print_and_log(self, message):
+        print(message)
+        self.log_message(message)
+
+    def log_message(self, message):
+        message += "\n"
+        with open(self.path, 'a', errors="ignore") as output_file:
+            output_file.writelines(f"[{datetime.now()}] {message}")
 
 
 def ensure_filepath_exists(file_path):
