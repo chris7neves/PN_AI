@@ -1,12 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import openpyxl
-import os
 from scipy.ndimage.filters import gaussian_filter
 
-import IO
-
-HEATMAP_LOGS_FILEPATH = os.getcwd() + "/logs/HeatMapGenerator.log"
+import filesystem
 
 TRIAL_TYPES = ["Practice Front-Front", "Front-Front Condition 1M", "Front-Front Condition 2F",
                "Practice FrontSide-SideFront 1", "FrontSide-SideFront 1F", "FrontSide-SideFront 2M",
@@ -39,8 +36,8 @@ def generate_scatter_plot(wb, excel_file_name, sheet_number):
 def generate_heatmap_image(wb, excel_file_name, sheet_number, trial_number):
     """Generates heatmap image of the trial being searched."""
 
-    xmin, xmax = 0, 1
-    ymin, ymax = 0, 1
+    xmin, xmax = -0.2, 1.2
+    ymin, ymax = -0.2, 1.2
 
     # Specifies excel row and column start of data depending on trial selected.
     row_start = 18
@@ -61,7 +58,7 @@ def generate_heatmap_image(wb, excel_file_name, sheet_number, trial_number):
         plt.axis('off')
         plt.savefig(image_filepath)
     else:
-        IO.print_and_log(HEATMAP_LOGS_FILEPATH, f"Unable to generate heatmap for {excel_file_name} - Sheet: {sheet_number} Trial: {trial_number}")
+        logging.print_and_log(f"Unable to generate heatmap for {excel_file_name} - Sheet: {sheet_number} Trial: {trial_number}")
 
 
 def generate_heatmap_data(x, y, s, bins):
@@ -83,7 +80,7 @@ def get_coordinate_arrays(worksheet, row_start, column_start):
         x_coord = round(float(row_cells[0].value), 2)
         y_coord = round(float(row_cells[1].value), 2)
 
-        if x_coord <= 0.05 or y_coord <= 0.05:
+        if not 0.05 <= x_coord <= 0.95 or not 0.05 <= y_coord <= 0.95:
             continue
 
         x_coordinate_array.append(x_coord)
@@ -104,7 +101,7 @@ def heatmap_cli():
 
         excel_file = input("Enter the Excel file name from the Data folder you would like to generate heat maps for:\n")
         sheet_number = int(input("Enter the sheet number you would like to generate scatter plots for (1-11):\n"))
-        wb = openpyxl.load_workbook(f'Data/{excel_file}.xlsm')
+        wb = openpyxl.load_workbook(f'data/{excel_file}.xlsm')
         generate_scatter_plot(wb, excel_file, sheet_number)
 
     # -------------HEAT MAP GENERATOR--------------
@@ -112,27 +109,27 @@ def heatmap_cli():
                      "NOTE: Doesn't work on mac and 88 images are generated!! Y/N\n")
 
     if heat_map.lower() == 'y':
-        IO.print_and_log(HEATMAP_LOGS_FILEPATH, "-----------HEAT MAP GENERATOR-----------")
+        logging.print_and_log("-----------HEAT MAP GENERATOR-----------")
         print("Outputs grayscale heatmaps for each sheet / trial number of the selected excel file.")
 
         excel_file = input("Enter the Excel file name from the Data folder you would like to generate heat maps for:\n")
 
-        IO.print_and_log(HEATMAP_LOGS_FILEPATH, f"Starting to generate heatmap files to directory {os.getcwd()}/Images/{excel_file}")
+        logging.print_and_log(f"Starting to generate heatmap files to directory /images/{excel_file}")
 
-        wb = openpyxl.load_workbook(f'Data/{excel_file}.xlsm')
-        IO.ensure_filepath_exists(f"Images/{excel_file}/")
+        wb = openpyxl.load_workbook(f'data/{excel_file}.xlsm')
+        filesystem.ensure_filepath_exists(f"images/{excel_file}/")
 
         for sheet_number in range(1, 12):
             for trial_number in range(1, 9):
-                IO.print_and_log(HEATMAP_LOGS_FILEPATH, f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
+                logging.print_and_log(f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
                 generate_heatmap_image(wb, excel_file, sheet_number, trial_number)
 
-        IO.print_and_log(HEATMAP_LOGS_FILEPATH, f"Finished generating heatmap files.")
+        logging.print_and_log(f"Finished generating heatmap files.")
 
 
 if __name__ == "__main__":
 
-    IO.ensure_filepath_exists(HEATMAP_LOGS_FILEPATH)
+    logging = filesystem.Logging("heatmap_generator.log")
 
     # TODO: Add functionality to generate heatmap images without needing a command-line interface.
     heatmap_cli()
