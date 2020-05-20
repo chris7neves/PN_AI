@@ -6,7 +6,7 @@
 import pyodbc
 
 class SQL_Database:
-    def __init__(self,server,database,username,password):
+    def __init__(self, server, database, username, password):
         self.server = server
         self.database = database
         self.username = username
