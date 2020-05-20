@@ -28,9 +28,11 @@ array2 = P1.Results(array[2][0])
 print(array2[0])
 
 print("================================Example 4==============================================")
-All_Excel_Files=P1.Participants()
-print(All_Excel_Files)
-Trials_From_One_Excel_File = P1.Results(All_Excel_Files[0][0])  # Feed H_AUTO_KEY
-print(Trials_From_One_Excel_File)
-Eye_Tracker_Data_For_One_Sheet = P1.EyeTrackerData(Trials_From_One_Excel_File[0][0]) # Feed T_AUTO_KEY
-print(Eye_Tracker_Data_For_One_Sheet[0]) #Eye Tracker [D_auto, Trial Number, Row Number, X, Y, Time, H_auto, T_Auto ]
+All_Excel_Files = P1.Participants()  # We call Participants which returns array as follows
+print(All_Excel_Files)             # [ H_AUTO_KEY, NAME_OF_EXCEL_FILE, AGE, SEX, ASD/TYPICAL]
+
+Trials_From_One_Excel_File = P1.Results(All_Excel_Files[0][0])  # We Call Results function using H_AUTO_KEY from above
+print(Trials_From_One_Excel_File)  # [ T_AUTO_KEY, TRIAL_NAME, RESULT_TRIAL_1, ..etc.. ]
+
+Eye_Tracker_Data_For_One_Sheet = P1.EyeTrackerData(Trials_From_One_Excel_File[0][0])  # Call EyeTrackerData with T_AUTO
+print(Eye_Tracker_Data_For_One_Sheet[0])  # Eye Tracker [D_auto, Trial Number, Row Number, X, Y, Time, H_auto, T_Auto ]

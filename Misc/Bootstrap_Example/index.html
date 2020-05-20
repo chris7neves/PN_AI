@@ -1,0 +1,94 @@
+<!-- this is how we write comments in html -->
+
+<!DOCTYPE html> <!-- All HTML files must begin with this -->
+
+<html lang="en"> <!-- Now we specify the language we are writing in -->
+
+
+
+<head> <!-- We start with a header and include things such as a title of our webpage and our links -->
+
+  <meta charset="utf-8"><!--UTF-8 - Character encoding for Unicode whereas ISO-8859-1 - Character encoding for the Latin alphabet -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><!-- This gives the browser instructions on how to control the page's dimensions and scaling. -->
+  <meta name="description" content="NH90 Demo ISS"> <!-- Check out this link for more info on meta tags: https://www.w3schools.com/tags/att_meta_name.asp -->
+  <meta name="author" content="Massimo">
+  <meta name="keyword" content="Creative, ScraptopBoys, PNLab, WorkSucks, Small_Changes, Bootstrap">
+
+
+  <title>Example Project for Bootstrap</title> <!-- Browser Title -->
+  
+  <!-- Links - this is where we define the style "functions" that come from Bootstrap -->
+  <!-- Now, because we want to work offline and do this the ghetto way, we're going to go to -->
+  <!-- https://getbootstrap.com/docs/4.0/getting-started/introduction/ this website and scroll down until we see the following -->
+  <!-- BootstrapCDN -->
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+  <!-- Follow the links and copy paste the code in there into a file called bootstrap.min.css and bootstrap.min.js like i did and place them in your css and js folders respectively -->
+  <!-- now that we did that, we need to add them as a reference to our index.html. Normally css is linked at the top and js at the bottom of the file -->
+  
+  <!-- Bootstrap CSS -->
+  <link href="css/bootstrap.min.css" rel="stylesheet"> <!-- 4.4.1 -->
+
+</head>
+
+
+<body>
+
+
+    <header> <!-- We're going to add a small header and make a reference to a second page called small_changes.html. this means when you click the header, you'll be redirected to a new html page -->
+      <a href="small_changes.html">Massimo is Amazing </a>	  
+    </header>
+
+	<!-- OK, lets start using the bootstrap that we brought in -->
+
+	<!-- If we navigate to the bootstrap website and go to components, we can see what components are available to us -->
+	<!-- https://getbootstrap.com/docs/4.0/components/alerts/ -->
+	<!-- For the sake of this example lets do a simple button -->
+		
+		<div class="col-md-3"> <!-- We'll create a div Start -->
+			<section class="panel">
+			<header class="panel-heading"><h3>Bootstrap Button</h3></header>
+			<div class="panel-body">
+					<div style="text-align: center"><a class="btn btn-primary" id="this_is_my_button_id" href="" title="Reload Mapping">A Cool Button be Amazed</a></div>
+			</div>
+			</section>
+		</div>
+
+
+		<!-- You can literally copy any html code from the bootstrap website and its going to work -->
+		<!-- This is code from the navbar -->
+
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Active</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#">Disabled</a>
+          </li>
+        </ul>
+
+
+		<!-- Ok now that we covered importing Bootstrap and basic html, lets cover some basic javascript -->
+		<!-- Lets make a file called "MassRox.js" and copy it in our js folder -->
+		<!-- before we write anything in it, lets import it into our index.html file. Remember, scripts are imported at the very bottom of the file -->
+		
+		<!-- My comments continue in MassRox.js so go to that file -->
+		
+		
+  <!-- bootstrap -->
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/jquery-3.2.1.slim.min.js"></script>
+  <script src="js/popper.min.js"></script>
+
+  <!-- MassRox -->
+  <script src="js/MassRox.js"></script>
+</body>
+
