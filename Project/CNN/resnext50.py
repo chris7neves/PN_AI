@@ -16,7 +16,6 @@ import torch.optim as optim
 
 import ETL_pipeline_CNN as etl
 import NetworkFactory as net
-import Utilities
 
 batch_sz = 10
 
@@ -61,38 +60,3 @@ print("Get rand image")
 test_dset.show_image(rand=True)
 
 print("Shape of test dset: {}".format(test_dset.data.shape))
-
-
-########## Training the CNN ##########
-
-torch.set_grad_enabled(True)
-
-BasicCNN = net.basicCNN()
-optimizer = optim.Adam(BasicCNN.parameters(), lr=0.001)
-
-train_loader = etl.get_dataloader(train_dset, batch_sz=5, shuff=True)
-test_loader = etl.get_dataloader(test_dset, batch_sz=5, shuff=True)
-count = 0
-print("Starting training...")
-for epoch in range(10): #TODO: write function to automatically go to next epoch once progress of current epoch plateaus
-    total_loss = 0
-    total_correct = 0
-    for i, batch in enumerate(train_loader):
-        print("Epoch:{}".format(epoch), "batch:{}".format(i))
-        images, labels = batch
-        # if count == 0:
-        #     print(images, labels)
-        #     count+=1
-        print(images.shape)
-        print(images)
-        predictions = BasicCNN(images)
-        loss = F.cross_entropy(predictions, labels) # Calculates the loss function using cross entropy
-        optimizer.zero_grad() # Resets gradients from previous cycle
-        loss.backward() # Uses backprop to calc gradients
-        optimizer.step() # Updates the weights
-
-        total_loss = loss.item()
-        total_correct += Utilities.get_num_correct(predictions, labels)
-
-    print("Epoch:{}".format(epoch), "loss:{}".format(total_loss))
-

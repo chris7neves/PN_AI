@@ -119,6 +119,10 @@ class HeatMapDST(torch.utils.data.Dataset):
         image = self.data[index][0]
         return label, image
 
+    #def normalize(self):
+    #TODO: create function to normalize image tensor (divide all values by 255)
+
+
     def get_labels(self):
         return self.labels
 
@@ -139,11 +143,10 @@ class HeatMapDST(torch.utils.data.Dataset):
             cv2.imshow(img_name, img.numpy())
             cv2.waitKey()
 
-def get_dataloader(dset, batch_sz):
-    hm_dloader = torch.utils.data.DataLoader(dset, batch_size=batch_sz)
+
+def get_dataloader(dset, batch_sz, shuff):
+    hm_dloader = torch.utils.data.DataLoader(dset, batch_size=batch_sz, shuffle=shuff)
     return hm_dloader
-
-
 
 
 

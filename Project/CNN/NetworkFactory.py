@@ -20,17 +20,30 @@ class basicCNN(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=7, kernel_size=5)
-        self.conv2 = nn.Conv2d(in_channels=7, out_channels=14, kernel_size=5)
+        self.conv1 = nn.Conv2d(in_channels=1, out_channels=3, kernel_size=9)
+        self.conv2 = nn.Conv2d(in_channels=7, out_channels=6, kernel_size=11)
         #TODO: Add more conv layers to reduce dimensionality (due to pooling layers
 
-        post_conv = 0 # Use this variable as a constant in the linear layers so values dont always need to be changed
-        self.fc1 = nn.Linear(in_features=14*117*157, out_features=257166)
-        self.fc2 = nn.Linear(in_features=257166, out_features=192874) # 25% reduction
-        self.fc3 = nn.Linear(in_features=192874, out_features=92437) # 50% reduction
-        self.fc4 = nn.Linear(in_features=92437, out_features=48218) # 50% reduction
-        self.fc5 = nn.Linear(in_features=48218, out_features=12054) # 75% reduction
-        self.out = nn.Linear(in_features=12054, out_features=2) # Final layer
+        self.H = 113
+        self.W = 153
+        self.final_chans = 6
+        self.post_conv = 6 * self.H * self.W
+
+        self.fc1 = nn.Linear(in_features=int(self.post_conv), out_features=int(self.post_conv))
+
+        self.lin2 = int(self.post_conv * 0.3)
+        self.fc2 = nn.Linear(in_features=self.post_conv, out_features=self.lin2) # 25% reduction
+
+        self.lin3 = int(self.lin2 * 0.3)
+        self.fc3 = nn.Linear(in_features=self.lin2, out_features=self.lin3) # 50% reduction
+
+        self.lin4 = int(self.lin3 * 0.3)
+        self.fc4 = nn.Linear(in_features=self.lin3, out_features=self.lin4) # 50% reduction
+
+        self.lin5 = int(self.lin4 * 0.3)
+        self.fc5 = nn.Linear(in_features=self.lin4, out_features=self.lin5) # 75% reduction
+
+        self.out = nn.Linear(in_features=self.lin5, out_features=2) # Final layer
 
     def forward(self, t):
         # Conv1
@@ -44,7 +57,7 @@ class basicCNN(nn.Module):
         t = F.max_pool2d(t, kernel_size=2, stride=2)
 
         # Flatten Tensor to be compatible with Linear Layer
-        t = t.reshape(-1, 14*117*157)
+        t = t.reshape(-1, self.final_chans*self.post_con)
 
         # fc1
         t = self.fc1(t)
