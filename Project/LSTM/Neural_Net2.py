@@ -1,21 +1,20 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
+import time
 
 class ANN(nn.Module):
-    def __init__(self, inputSize, hiddenSize, outputSize, learning_rate_input):
+    def __init__(self, net_model, learning_rate_input):
         super(ANN, self).__init__()
         # parameters
-        # TODO: parameters can be parameterized instead of declaring them here
-        self.inputSize = inputSize
-        self.hiddenSize = hiddenSize
-        self.outputSize = outputSize
-
         self.learning_rate = learning_rate_input
         self.criterion = nn.NLLLoss()
-
         self.model = nn.Sequential(nn.Linear(2, 3), nn.Sigmoid(), nn.Linear(3, 2), nn.LogSoftmax(dim=1))
         self.optimizer = torch.optim.SGD(self.model.parameters(), self.learning_rate)
+        # Timers
+        self.start_time = 0
+        self.end_time = 0
+        self.elapsed_time = 0
 
     def forward(self, input_tensor):
         output = self.model(input_tensor)
@@ -29,6 +28,7 @@ class ANN(nn.Module):
         self.trainloader = torch.utils.data.DataLoader(dataset, batch_size=input_batch_size, shuffle=True)
 
     def train(self, epochs):
+        self.start_time = time.time()  # Start Timer
         for e in range(epochs):
             running_loss = 0
             print(e)
@@ -41,3 +41,6 @@ class ANN(nn.Module):
                 self.optimizer.step()
                 running_loss += loss.item()
             print(f"Training loss: {running_loss / len(self.trainloader)}")
+        self.end_time = time.time()
+        self.elapsed_time = self.end_time - self.start_time
+        print(f"Training Complete! Training Time: {self.elapsed_time}")
