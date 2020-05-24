@@ -7,7 +7,6 @@
 
 # ---------- Imports ---------- #
 from Utilities import *
-import IO
 
 import os
 import numpy as np

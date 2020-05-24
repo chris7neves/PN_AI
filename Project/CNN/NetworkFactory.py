@@ -21,7 +21,7 @@ class basicCNN(nn.Module):
         super().__init__()
 
         self.conv1 = nn.Conv2d(in_channels=1, out_channels=3, kernel_size=9)
-        self.conv2 = nn.Conv2d(in_channels=7, out_channels=6, kernel_size=11)
+        self.conv2 = nn.Conv2d(in_channels=3, out_channels=6, kernel_size=11)
         #TODO: Add more conv layers to reduce dimensionality (due to pooling layers
 
         self.H = 113
