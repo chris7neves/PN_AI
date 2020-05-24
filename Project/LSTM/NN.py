@@ -1,10 +1,12 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
-
+import time
 
 class SampleDataset(Dataset):  # https://stanford.edu/~shervine/blog/pytorch-how-to-generate-data-parallel
     def __init__(self):
+
+        # [2 , 3, 2]
         self.X = torch.tensor(([5, 9], [8, 8], [3, 6], [2, 8], [4, 6], [4, 5.5], [5.5, 8], [6, 4]), requires_grad=True,
                                     dtype=torch.float)  # 3 x 2 tensor
         # self.Y = torch.tensor(([92], [100], [69], [90], [79], [84], [86], [75]), dtype=torch.float)  # 3 x 1 tensor
@@ -27,8 +29,10 @@ model = nn.Sequential(nn.Linear(2, 3), nn.Sigmoid(), nn.Linear(3, 2), nn.LogSoft
 optimizer = torch.optim.SGD(model.parameters(), 0.003)
 criterion = nn.NLLLoss()
 
-epochs = 20000
-
+epochs = 200
+# print(model[0].weight)
+# print(model[0].bias)
+# time.sleep(10000)
 
 for e in range(epochs):
     running_loss = 0
@@ -49,15 +53,24 @@ print("testing the network")
 print("==================== 1 =======================")
 input_tensor = torch.tensor([[6, 8]], dtype=torch.float)
 output = model(input_tensor)
-print(output)
+if(output[0][0] > output[0][1]):
+    print("Will pass")
+else:
+    print("Will get rekt")
+
 
 print("==================== 2 =======================")
 input_tensor = torch.tensor([[3, 5]], dtype=torch.float)
 output = model(input_tensor)
-print(output)
-
+if(output[0][0] > output[0][1]):
+    print("Will pass")
+else:
+    print("Will get rekt")
 
 print("==================== 3 =======================")
 input_tensor = torch.tensor([[1, 0]], dtype=torch.float)
 output = model(input_tensor)
-print(output)
+if(output[0][0] > output[0][1]):
+    print("Will pass")
+else:
+    print("Will get rekt")
