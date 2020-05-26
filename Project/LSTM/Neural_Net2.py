@@ -3,6 +3,10 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 import time
 
+# https://towardsdatascience.com/building-neural-network-using-pytorch-84f6e75f9a
+# https://towardsdatascience.com/training-a-neural-network-using-pytorch-72ab708da210
+# https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
+
 class ANN(nn.Module):
     def __init__(self, net_model, learning_rate_input):
         super(ANN, self).__init__()
@@ -11,6 +15,7 @@ class ANN(nn.Module):
         self.criterion = nn.NLLLoss()
         self.model = nn.Sequential(nn.Linear(2, 3), nn.Sigmoid(), nn.Linear(3, 2), nn.LogSoftmax(dim=1))
         self.optimizer = torch.optim.SGD(self.model.parameters(), self.learning_rate)
+        #SGD vs crossentropy
         # Timers
         self.start_time = 0
         self.end_time = 0
