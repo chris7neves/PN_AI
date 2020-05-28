@@ -15,6 +15,7 @@ import torch
 import torch.utils.data
 import random
 from sklearn.model_selection import train_test_split
+from PIL import Image
 # ----------------------------- #
 
 print("Please make sure that the only folders found in the Image data directory")
@@ -104,7 +105,7 @@ class HeatMapDST(torch.utils.data.Dataset):
         else:
             self.data_category = "Validation Data"
             self.train = False
-        self.data = torch.unsqueeze(torch.from_numpy(data), 1)
+        self.data = torch.unsqueeze(torch.from_numpy(np.divide(data, 255.0)), 1)
         self.labels = torch.from_numpy(labels)
 
     def __len__(self):
@@ -114,6 +115,11 @@ class HeatMapDST(torch.utils.data.Dataset):
         return len(self.data)
 
     def __getitem__(self, index): # Need to test
+        label = self.labels[index]
+        image = self.data[index]
+        return image, label
+
+    def get_pic(self, index): # Need to test
         label = self.labels[index]
         image = self.data[index][0]
         return label, image
@@ -132,11 +138,11 @@ class HeatMapDST(torch.utils.data.Dataset):
         if rand:
             random.seed()
             last = self.__len__() - 1
-            lab, temp_im = self.__getitem__(random.randint(0, last))
+            lab, temp_im = self.get_pic(random.randint(0, last))
             cv2.imshow('Label: {}'.format(lab), temp_im.numpy())
             cv2.waitKey()
         else:
-            lab, img = self.__getitem__(index)
+            lab, img = self.get_pic(index)
             img_name = "Label: " + str(lab)
             print(img_name)
             cv2.imshow(img_name, img.numpy())
