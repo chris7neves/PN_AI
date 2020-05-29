@@ -78,16 +78,17 @@ BasicCNN = net.basicCNN().to(device)
 
 
 optimizer = optim.Adam(BasicCNN.parameters(), lr=0.001)
-
-train_loader = etl.get_dataloader(train_dset, batch_sz=10, shuff=True)
-test_loader = etl.get_dataloader(test_dset, batch_sz=10, shuff=True)
+batch_size = 10
+train_loader = etl.get_dataloader(train_dset, batch_sz=batch_size, shuff=True)
+test_loader = etl.get_dataloader(test_dset, batch_sz=batch_size, shuff=True)
 count = 0
 print("Starting training...")
 for epoch in range(10): #TODO: write function to automatically go to next epoch once progress of current epoch plateaus
     total_loss = 0
     total_correct = 0
+    total_guessed = 0
     for i, batch in enumerate(train_loader):
-        print("Epoch:{}".format(epoch), "batch:{}".format(i))
+        print("Epoch:{}".format(epoch), "batch:{}".format(i), 'START')
         images, labels = batch
         im_gpu = images.to(device)
         lab_gpu = labels.to(device)
@@ -114,7 +115,11 @@ for epoch in range(10): #TODO: write function to automatically go to next epoch 
         #total_correct += Utilities.get_num_correct(predictions, labels)
         total_correct += Utilities.get_num_correct(predictions, lab_gpu)
 
-        print(f"Epoch: {epoch} batch: {i}  COMPLETE")
 
-    print("Epoch:{}".format(epoch), "Total loss:{}".format(total_loss))
+        total_guessed += images.shape[0]
+
+
+        print(f"Epoch: {epoch} batch: {i}  accuracy: {total_correct/total_guessed} COMPLETE\n")
+
+    print("Epoch:{}".format(epoch), "Total loss:{}\n\n".format(total_loss))
 

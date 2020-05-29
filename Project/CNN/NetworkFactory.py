@@ -54,22 +54,22 @@ class basicCNN(nn.Module):
         t = self.conv2(t)
         t = F.relu(t)
         t = F.max_pool2d(t, kernel_size=2, stride=2)
-        print(f"Post Conv shape: {t.shape}")
+        #print(f"Post Conv shape: {t.shape}")
         # Flatten Tensor to be compatible with Linear Layer
         t = t.reshape(-1, self.post_conv)
 
         # fc1
         t = self.fc1(t)
         t = F.relu(t)
-        print("Linear Layer 1 complete.")
+        #print("Linear Layer 1 complete.")
         # fc2
         t = self.fc2(t)
         t = F.relu(t)
-        print("Linear Layer 2 complete.")
+        #print("Linear Layer 2 complete.")
         # fc3
         t = self.fc3(t)
         t = F.relu(t)
-        print("Linear Layer 3 complete.")
+        #print("Linear Layer 3 complete.")
         # fc4
         #t = self.fc4(t)
         #t = F.relu(t)
@@ -77,10 +77,10 @@ class basicCNN(nn.Module):
         # fc5
         t = self.fc5(t)
         t = F.relu(t)
-        print("Linear Layer 5 complete.")
+        #print("Linear Layer 5 complete.")
         # out
         t = self.out(t)
-        print("output layer reached.")
+        #print("output layer reached.")
         # There is no final max pool layer since adam optimizer is being used
 
         return t
