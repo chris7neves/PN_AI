@@ -16,3 +16,11 @@ class SampleDataset(Dataset):  # https://stanford.edu/~shervine/blog/pytorch-how
         x_data = self.X[index]
         y_data = self.Y[index]
         return x_data, y_data
+
+ #   def normalize(self):
+
+
+# import numpy as np
+# >>> y = np.array([[2,3], [4,5]])
+# >>> y.flatten()
+# array([2, 3, 4, 5])

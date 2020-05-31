@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 import time
+import filesystem
+from collections import OrderedDict
 
 # https://towardsdatascience.com/building-neural-network-using-pytorch-84f6e75f9a
 # https://towardsdatascience.com/training-a-neural-network-using-pytorch-72ab708da210
@@ -13,7 +15,8 @@ class ANN(nn.Module):
         # parameters
         self.learning_rate = learning_rate_input
         self.criterion = nn.NLLLoss()
-        self.model = nn.Sequential(nn.Linear(2, 3), nn.Sigmoid(), nn.Linear(3, 2), nn.LogSoftmax(dim=1))
+        #self.model = nn.Sequential(nn.Linear(2, 3), nn.Sigmoid(), nn.Linear(3, 2), nn.LogSoftmax(dim=1))
+        self.model = net_model
         self.optimizer = torch.optim.SGD(self.model.parameters(), self.learning_rate)
         #SGD vs crossentropy
         # Timers
@@ -49,3 +52,21 @@ class ANN(nn.Module):
         self.end_time = time.time()
         self.elapsed_time = self.end_time - self.start_time
         print(f"Training Complete! Training Time: {self.elapsed_time}")
+
+    def save(self, path, name):
+        # https://machinelearningmastery.com/stacking-ensemble-for-deep-learning-neural-networks/
+        # https://pytorch.org/tutorials/beginner/saving_loading_models.html
+        torch.save({
+            'model_state_dict':self.model.state_dict(),
+            }, filesystem.os.path.join("E:/dev/PN_AI/Project/LSTM/Saved", f"{name}_model.pth"))
+        # torch.save(self.model, filesystem.os.path.join("E:/dev/PN_AI/Project/LSTM/Saved", f"{name}_model.pth"))
+
+
+    def load(self, path, name):
+        modelcheckpoint = torch.load(filesystem.os.path.join("E:/dev/PN_AI/Project/LSTM/Saved", f"{name}_model.pth"))
+        self.model.load_state_dict(modelcheckpoint['model_state_dict'])
+        #self.model.load_state_dict(modelcheckpoint['optimizer_state_dict'])
+
+
+
+
