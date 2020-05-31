@@ -14,7 +14,7 @@ nn.train(epochs)
 
 input_tensor = Neural_Net2.torch.tensor([[3, 8]], dtype=Neural_Net2.torch.float)
 output = nn.forward(input_tensor)
-print("Neural Net 1")
+nn.Log.print_and_log("Neural Net 1")
 print(output)
 
 nn.save("E:/dev/PN_AI/Project/LSTM/Saved", "massimo")
@@ -22,12 +22,11 @@ nn.save("E:/dev/PN_AI/Project/LSTM/Saved", "massimo")
 # ================ Loading into a second NN ========================
 
 model2 = Neural_Net2.nn.Sequential(Neural_Net2.nn.Linear(2, 3), Neural_Net2.nn.Sigmoid(), Neural_Net2.nn.Linear(3, 2), Neural_Net2.nn.LogSoftmax(dim=1))
-#model2 = Neural_Net2.nn.Sequential()
 nn2 = Neural_Net2.ANN(model2, 0.003)
 
 nn2.load("E:/dev/PN_AI/Project/LSTM/Saved", "massimo")
 output2 = nn2.forward(input_tensor)
-print("Neural Net 2")
+nn2.Log.print_and_log("Neural Net 2")
 print(output)
 
 

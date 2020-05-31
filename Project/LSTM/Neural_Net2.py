@@ -23,13 +23,14 @@ class ANN(nn.Module):
         self.start_time = 0
         self.end_time = 0
         self.elapsed_time = 0
+        self.Log = filesystem.Logging("Mass_NN.txt")
 
     def forward(self, input_tensor):
         output = self.model(input_tensor)
         if (output[0][0] > output[0][1]):
-            print("Will pass")
+            self.Log.print_and_log(f"Will pass")
         else:
-            print("Will get rekt")
+            self.Log.print_and_log(f"Will get rekt")
         return output
 
     def prepdata(self, dataset, input_batch_size):
@@ -39,7 +40,7 @@ class ANN(nn.Module):
         self.start_time = time.time()  # Start Timer
         for e in range(epochs):
             running_loss = 0
-            print(e)
+            self.Log.print_and_log(f"Epoch: {e}")
             for input, expected_output in self.trainloader:
                 # Training pass
                 self.optimizer.zero_grad()
@@ -48,24 +49,23 @@ class ANN(nn.Module):
                 loss.backward()
                 self.optimizer.step()
                 running_loss += loss.item()
-            print(f"Training loss: {running_loss / len(self.trainloader)}")
+            self.Log.print_and_log(f"Training loss: {running_loss / len(self.trainloader)}")
         self.end_time = time.time()
         self.elapsed_time = self.end_time - self.start_time
-        print(f"Training Complete! Training Time: {self.elapsed_time}")
+        self.Log.print_and_log(f"Training Complete! Training Time: {self.elapsed_time}")
 
     def save(self, path, name):
         # https://machinelearningmastery.com/stacking-ensemble-for-deep-learning-neural-networks/
         # https://pytorch.org/tutorials/beginner/saving_loading_models.html
-        torch.save({
-            'model_state_dict':self.model.state_dict(),
-            }, filesystem.os.path.join("E:/dev/PN_AI/Project/LSTM/Saved", f"{name}_model.pth"))
-        # torch.save(self.model, filesystem.os.path.join("E:/dev/PN_AI/Project/LSTM/Saved", f"{name}_model.pth"))
+        savefile = filesystem.os.path.join("E:/dev/PN_AI/Project/LSTM/Saved", f"{name}_model.pth")
+        torch.save({'model_state_dict':self.model.state_dict()}, savefile)
+        self.Log.print_and_log(f"Saved Neural Net to: {savefile}")
 
 
     def load(self, path, name):
         modelcheckpoint = torch.load(filesystem.os.path.join("E:/dev/PN_AI/Project/LSTM/Saved", f"{name}_model.pth"))
         self.model.load_state_dict(modelcheckpoint['model_state_dict'])
-        #self.model.load_state_dict(modelcheckpoint['optimizer_state_dict'])
+        self.Log.print_and_log(f"Loaded Neural Net from {name}_model.pth")
 
 
 
