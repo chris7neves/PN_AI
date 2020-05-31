@@ -66,3 +66,9 @@ class SQL_Database:
             # print(row)
             rowArray.append(row)
         return rowArray
+
+    def execute_statement(self, string):
+        cnxn = pyodbc.connect('DRIVER=' + self.drivers[0] + ';SERVER=' + self.server + ';DATABASE=' + self.database + ';UID=' + self.username + ';PWD=' + self.password)
+        cursor = cnxn.cursor()
+        cursor.execute(string)
+        cnxn.commit()

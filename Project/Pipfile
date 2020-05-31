@@ -15,6 +15,7 @@ pyodbc = "*"
 opencv-python = "*"
 scikit-learn = "*"
 beautifulsoup4 = "*"
+xlrd = "*"
 
 [requires]
 python_version = "3.7"
