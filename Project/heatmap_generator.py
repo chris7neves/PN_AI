@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import openpyxl
 from scipy.ndimage.filters import gaussian_filter
+import os
 
 import filesystem
 
@@ -57,6 +58,7 @@ def generate_heatmap_image(wb, excel_file_name, sheet_number, trial_number):
         plt.imshow(img, origin='lower', cmap="Greys", aspect='auto', interpolation='nearest', extent=[xmin, xmax, ymin, ymax])
         plt.axis('off')
         plt.savefig(image_filepath)
+        plt.close()
     else:
         logging.print_and_log(f"Unable to generate heatmap for {excel_file_name} - Sheet: {sheet_number} Trial: {trial_number}")
 
@@ -112,17 +114,38 @@ def heatmap_cli():
         logging.print_and_log("-----------HEAT MAP GENERATOR-----------")
         print("Outputs grayscale heatmaps for each sheet / trial number of the selected excel file.")
 
-        excel_file = input("Enter the Excel file name from the Data folder you would like to generate heat maps for:\n")
+        excel_file = input("Enter the Excel file name from the Data folder you would like to generate heat maps for or enter 'a' to generate heat maps for all trials in data folder:\n")
 
-        logging.print_and_log(f"Starting to generate heatmap files to directory /images/{excel_file}")
+        if excel_file == 'a':
+            cwd = os.getcwd()
+            data_folder = os.path.join(cwd, "Data")
+            for r, d, f in os.walk(data_folder):
+                for file in f:
+                    if file[0] == 'T' or file[0] == 'A':
+                        logging.print_and_log(f"Starting to generate heatmap files to directory /images/{file}")
 
-        wb = openpyxl.load_workbook(f'data/{excel_file}.xlsm')
-        filesystem.ensure_filepath_exists(f"images/{excel_file}/")
+                        print(f"Generating heatmap for {file} ...")
 
-        for sheet_number in range(1, 12):
-            for trial_number in range(1, 9):
-                logging.print_and_log(f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
-                generate_heatmap_image(wb, excel_file, sheet_number, trial_number)
+                        wb = openpyxl.load_workbook(f'data/{file}')
+                        filesystem.ensure_filepath_exists(f"images/{file}/")
+
+                        for sheet_number in range(1, 12):
+                            for trial_number in range(1, 9):
+                                logging.print_and_log(
+                                    f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
+                                generate_heatmap_image(wb, file, sheet_number, trial_number)
+
+                        wb.close()
+        else:
+            logging.print_and_log(f"Starting to generate heatmap files to directory /images/{excel_file}")
+
+            wb = openpyxl.load_workbook(f'data/{excel_file}.xlsm')
+            filesystem.ensure_filepath_exists(f"images/{excel_file}/")
+
+            for sheet_number in range(1, 12):
+                for trial_number in range(1, 9):
+                    logging.print_and_log(f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
+                    generate_heatmap_image(wb, excel_file, sheet_number, trial_number)
 
         logging.print_and_log(f"Finished generating heatmap files.")
 
