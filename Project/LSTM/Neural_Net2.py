@@ -68,5 +68,32 @@ class ANN(nn.Module):
         self.Log.print_and_log(f"Loaded Neural Net from {name}_model.pth")
 
 
+    def test(self):
+        print("testing network")
+        for input, expected_output in self.trainloader:
+            print("input")
+            print(input)
+            print("expected output")
+            print(expected_output)
+            output = self.model(input)
+            print("Output from Network")
+            print(output)
+            break
+
+        #value = output
+        #print(value)
+        # if expected_output[0] > expected_output[1]:
+        #     print("Subject: TYP")
+        #     if output[0][0] > output[0][1]:
+        #         print("Guess: TYP - CORRECT :)")
+        #     else:
+        #         print("Guess: ASD - INCORRECT :(")
+        # else:
+        #     print("Subject: ASD")
+        #     if output[0][0] < output[0][1]:
+        #         print("Guess: ASD - CORRECT :)")
+        #     else:
+        #         print("Guess: TYP - INCORRECT :(")
+
 
 
