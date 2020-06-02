@@ -41,6 +41,7 @@ print(Eye_Tracker_Data_For_One_Sheet[0])  # Eye Tracker [D_auto, Trial Number, R
 print("================================Example 4==============================================")
 All_Excel_Files = P1.Participants()  # We call Participants which returns array as follows
 print(All_Excel_Files)             # [ H_AUTO_KEY, NAME_OF_EXCEL_FILE, AGE, SEX, ASD/TYPICAL]
+print(len(All_Excel_Files))
 
 response = P1.Query("""select
 case when T1_C = T1_I then 1 else 0 end as T1_A,
