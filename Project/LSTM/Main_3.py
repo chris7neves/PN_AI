@@ -11,12 +11,13 @@ model = Neural_Net2.nn.Sequential(Neural_Net2.nn.Linear(176, 200), Neural_Net2.n
                                   Neural_Net2.nn.Linear(75, 2), Neural_Net2.nn.LogSoftmax(dim=1))
 
 nn = Neural_Net2.ANN(model, 0.003)
-nn.prepdata(Mass_Data, batch_size)
-nn.train(epochs)
-
-nn.test()
-
-nn.save("E:/dev/PN_AI/Project/LSTM/Saved", "massimo")
+nn.splitandprepdata(Mass_Data, 0.2, batch_size, True)
+# nn.prepdata(Mass_Data, batch_size)
+# nn.train(epochs)
+#
+# nn.test()
+#
+# nn.save("E:/dev/PN_AI/Project/LSTM/Saved", "massimo")
 
 
 
