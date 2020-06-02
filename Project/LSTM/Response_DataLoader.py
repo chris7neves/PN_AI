@@ -69,17 +69,13 @@ class ResponseDataset(Dataset):  # https://stanford.edu/~shervine/blog/pytorch-h
             # print(outputArray)
         self.Output = torch.tensor(outputArray, dtype=torch.float)
 
+        self.InputDimensions = self.Input.size()
+        self.OutputDimensions = self.Output.size()
         print("Data Acquisition Complete")
         # print("Input Tensor")
         # print(self.Input)
         # print("Output Tensor")
         # print(self.Output)
-
-
-        self.X = torch.tensor(([5, 9], [8, 8], [3, 6], [2, 8], [4, 6], [4, 5.5], [5.5, 8], [6, 4]), requires_grad=True,
-                               dtype=torch.float)  # 3 x 2 tensor
-        # self.Y = torch.tensor(([92], [100], [69], [90], [79], [84], [86], [75]), dtype=torch.float)  # 3 x 1 tensor
-        self.Y = torch.tensor(([1, 0], [1, 0], [0, 1], [0, 1], [1, 0], [0, 1], [1, 0], [0, 1]), dtype=torch.float)  # [Pass, Fail]
 
     def __len__(self):
         return len(self.Y)

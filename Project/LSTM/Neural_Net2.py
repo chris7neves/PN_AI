@@ -1,8 +1,11 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
+from torch.utils.data.sampler import SubsetRandomSampler
 import time
 import filesystem
+import numpy as np
+from datetime import datetime
 from collections import OrderedDict
 
 # https://towardsdatascience.com/building-neural-network-using-pytorch-84f6e75f9a
@@ -70,7 +73,7 @@ class ANN(nn.Module):
 
     def test(self):
         print("testing network")
-        for input, expected_output in self.trainloader:
+        for input, expected_output in self.validationloader:
             print("input")
             print(input)
             print("expected output")
@@ -80,20 +83,43 @@ class ANN(nn.Module):
             print(output)
             break
 
-        #value = output
-        #print(value)
-        # if expected_output[0] > expected_output[1]:
-        #     print("Subject: TYP")
-        #     if output[0][0] > output[0][1]:
-        #         print("Guess: TYP - CORRECT :)")
-        #     else:
-        #         print("Guess: ASD - INCORRECT :(")
-        # else:
-        #     print("Subject: ASD")
-        #     if output[0][0] < output[0][1]:
-        #         print("Guess: ASD - CORRECT :)")
-        #     else:
-        #         print("Guess: TYP - INCORRECT :(")
+            # value = output
+            # print(value)
+            # if expected_output[0] > expected_output[1]:
+            #     print("Subject: TYP")
+            #     if output[0][0] > output[0][1]:
+            #         print("Guess: TYP - CORRECT :)")
+            #     else:
+            #         print("Guess: ASD - INCORRECT :(")
+            # else:
+            #     print("Subject: ASD")
+            #     if output[0][0] < output[0][1]:
+            #         print("Guess: ASD - CORRECT :)")
+            #     else:
+            #         print("Guess: TYP - INCORRECT :(")
+
+
+    def splitandprepdata(self, dataset, validation_ratio, batch_size, shuffle):
+        validation_split = validation_ratio
+        dataset_size = dataset.InputDimensions[0]
+        indices = list(range(dataset_size))
+        split = int(np.floor(validation_split * dataset_size))
+        print(f"Dataset size = {dataset_size}")
+        print(f"validation split * dataset size = {validation_split * dataset_size}")
+        print(f"floored split {split}")
+
+        if shuffle:
+           np.random.seed(datetime.now())
+           np.random.shuffle(indices)
+        train_indices, val_indices = indices[split:], indices[:split]
+
+        train_sampler = SubsetRandomSampler(train_indices)
+        valid_sampler = SubsetRandomSampler(val_indices)
+
+        self.trainloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=train_sampler)
+        self.validationloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=valid_sampler)
+
+
 
 
 
