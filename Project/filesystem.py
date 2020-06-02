@@ -5,7 +5,7 @@ from datetime import datetime
 class Logging:
 
     def __init__(self, file_name):
-        self.path = os.path.dirname(os.path.realpath(__file__)) + "/logs/" + file_name
+        self.path = os.path.dirname(os.path.realpath(__file__)) + "/logs/" + file_name + '_' + datetime.now().date()
         ensure_filepath_exists(self.path)
 
     def print_and_log(self, message):

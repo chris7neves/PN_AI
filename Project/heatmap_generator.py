@@ -3,6 +3,7 @@ import numpy as np
 import openpyxl
 from scipy.ndimage.filters import gaussian_filter
 import os
+import re
 
 import filesystem
 
@@ -114,26 +115,27 @@ def heatmap_cli():
         logging.print_and_log("-----------HEAT MAP GENERATOR-----------")
         print("Outputs grayscale heatmaps for each sheet / trial number of the selected excel file.")
 
-        excel_file = input("Enter the Excel file name from the Data folder you would like to generate heat maps for or enter 'a' to generate heat maps for all trials in data folder:\n")
+        excel_file = input("Enter the Excel file name from the Data folder you would like to generate heat maps for or enter 'a' to generate heatmaps for all trials in data folder:\n")
 
-        if excel_file == 'a':
+        if excel_file.lower() == 'a':
             cwd = os.getcwd()
             data_folder = os.path.join(cwd, "Data")
             for r, d, f in os.walk(data_folder):
                 for file in f:
-                    if file[0] == 'T' or file[0] == 'A':
-                        logging.print_and_log(f"Starting to generate heatmap files to directory /images/{file}")
+                    if re.match('(A|T)[0-9]{3}.xls', file):
 
-                        print(f"Generating heatmap for {file} ...")
+                        file_name = file.rsplit('.')[0]
+
+                        logging.print_and_log(f"Starting to generate heatmap files to directory /images/{file_name}")
+                        print(f"Generating heatmaps for {file_name} ...")
 
                         wb = openpyxl.load_workbook(f'data/{file}')
-                        filesystem.ensure_filepath_exists(f"images/{file}/")
+                        filesystem.ensure_filepath_exists(f"images/{file_name}/")
 
                         for sheet_number in range(1, 12):
                             for trial_number in range(1, 9):
-                                logging.print_and_log(
-                                    f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
-                                generate_heatmap_image(wb, file, sheet_number, trial_number)
+                                logging.print_and_log(f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
+                                generate_heatmap_image(wb, file_name, sheet_number, trial_number)
 
                         wb.close()
         else:
@@ -146,6 +148,8 @@ def heatmap_cli():
                 for trial_number in range(1, 9):
                     logging.print_and_log(f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
                     generate_heatmap_image(wb, excel_file, sheet_number, trial_number)
+
+            wb.close()
 
         logging.print_and_log(f"Finished generating heatmap files.")
 
