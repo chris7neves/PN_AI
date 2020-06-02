@@ -156,7 +156,7 @@ def heatmap_cli():
 
 if __name__ == "__main__":
 
-    logging = filesystem.Logging("heatmap_generator.log")
+    logging = filesystem.Logging("heatmap_generator")
 
     # TODO: Add functionality to generate heatmap images without needing a command-line interface.
     heatmap_cli()
