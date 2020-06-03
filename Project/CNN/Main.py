@@ -78,7 +78,7 @@ BasicCNN = net.basicCNN().to(device)
 
 
 optimizer = optim.Adam(BasicCNN.parameters(), lr=0.001)
-batch_size = 10
+batch_size = 20
 train_loader = etl.get_dataloader(train_dset, batch_sz=batch_size, shuff=True)
 test_loader = etl.get_dataloader(test_dset, batch_sz=batch_size, shuff=True)
 count = 0
