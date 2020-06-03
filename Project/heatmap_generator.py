@@ -76,14 +76,15 @@ def get_coordinate_arrays(worksheet, row_start, column_start):
     x_coordinate_array = []
     y_coordinate_array = []
 
-    for row_cells in worksheet.iter_rows(min_row=row_start, min_col=column_start, max_col=column_start + 1):
+    for row_cells in worksheet.iter_rows(min_row=row_start, min_col=column_start, max_col=column_start + 2):
         if not str(row_cells[0].value).replace('.', '', 1).isdigit():
             continue
 
         x_coord = round(float(row_cells[0].value), 2)
         y_coord = round(float(row_cells[1].value), 2)
+        time = round(float(row_cells[2].value), 2)
 
-        if not 0.05 <= x_coord <= 0.95 or not 0.05 <= y_coord <= 0.95:
+        if not 0.05 <= x_coord <= 0.95 or not 0.05 <= y_coord <= 0.95 or time < 0:
             continue
 
         x_coordinate_array.append(x_coord)
