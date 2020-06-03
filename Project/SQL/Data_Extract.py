@@ -107,7 +107,7 @@ class SQL_Database:
         return rowArray
 
 
-    def TrackerDataInputs(self, H_AUTO_KEY):
+    def TrackerDataInputs(self, H_AUTO_KEY, T_AUTO_KEY, Trial_Number):
         string = f"""select 
 stamp_order,
 x_data,
@@ -115,9 +115,9 @@ y_data,
 time_data
 from data_details
 
-where h_auto_key = 1000081
-and t_auto_key = 1000680
-and trial_num = 1
+where h_auto_key = {H_AUTO_KEY}
+and t_auto_key = {T_AUTO_KEY}
+and trial_num = {Trial_Number}
 
 ORDER BY STAMP_ORDER asc
 

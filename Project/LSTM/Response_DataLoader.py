@@ -72,10 +72,6 @@ class ResponseDataset(Dataset):  # https://stanford.edu/~shervine/blog/pytorch-h
         self.InputDimensions = self.Input.size()
         self.OutputDimensions = self.Output.size()
         print("Data Acquisition Complete")
-        # print("Input Tensor")
-        # print(self.Input)
-        # print("Output Tensor")
-        # print(self.Output)
 
     def __len__(self):
         return len(self.Y)
