@@ -10,13 +10,13 @@ import filesystem
 from Project.SQL.Data_Extract import SQLDatabase
 
 
-class GeneratorSource(Enum):
+class DataSource(Enum):
     SQL = 1
     Excel = 2
 
 
-GENERATED_FROM = GeneratorSource.SQL
-if GENERATED_FROM == GeneratorSource.SQL:
+GENERATED_FROM = DataSource.SQL
+if GENERATED_FROM == DataSource.SQL:
     SQL_CONNECTION = SQLDatabase(filesystem.os.environ["PNAI_SERVER"],
                                  filesystem.os.environ["PNAI_DATABASE"],
                                  filesystem.os.environ["PNAI_USERNAME"],
@@ -61,14 +61,14 @@ def generate_heatmap_image(wb, excel_file_name, sheet_number, trial_number):
     image_filepath = f"Images/{excel_file_name}/{TRIAL_TYPES[sheet_number - 1]}_Trial{trial_number}.png"
 
     # Specifies excel row and column start of data depending on trial selected.
-    if GENERATED_FROM == GeneratorSource.Excel:
+    if GENERATED_FROM == DataSource.Excel:
         row_start = 18
         column_start = 16 + (trial_number - 1) * 3
 
         worksheet = wb[f'Sheet{sheet_number}']
         success, x, y = get_coordinate_arrays(worksheet, row_start, column_start)
 
-    elif GENERATED_FROM == GeneratorSource.SQL:
+    elif GENERATED_FROM == DataSource.SQL:
         x, y = SQL_CONNECTION.coordinate_data(excel_file_name, TRIAL_TYPES[sheet_number-1], trial_number)
         success = x and y
 
@@ -138,14 +138,14 @@ def generate_heatmaps(file_name):
                     print(f"Generating heatmaps for {file_name} ...")
                     filesystem.ensure_filepath_exists(f"images/{file_name}/")
 
-                    if GENERATED_FROM == GeneratorSource.Excel:
+                    if GENERATED_FROM == DataSource.Excel:
                         wb = openpyxl.load_workbook(f'data/{file}')
 
                     for sheet_number in range(1, 12):
                         for trial_number in range(1, 9):
                             generate_heatmap_image(wb, file_name, sheet_number, trial_number)
 
-                    if GENERATED_FROM == GeneratorSource.Excel:
+                    if GENERATED_FROM == DataSource.Excel:
                         wb.close()
 
     elif re.match('(A|T)[0-9]{3}', file_name):
@@ -153,14 +153,14 @@ def generate_heatmaps(file_name):
         print(f"Generating heatmaps for {file_name} ...")
         filesystem.ensure_filepath_exists(f"images/{file_name}/")
 
-        if GENERATED_FROM == GeneratorSource.Excel:
+        if GENERATED_FROM == DataSource.Excel:
             wb = openpyxl.load_workbook(f'data/{file_name}.xlsm')
 
         for sheet_number in range(1, 12):
             for trial_number in range(1, 9):
                 generate_heatmap_image(wb, file_name, sheet_number, trial_number)
 
-        if GENERATED_FROM == GeneratorSource.Excel:
+        if GENERATED_FROM == DataSource.Excel:
             wb.close()
 
 

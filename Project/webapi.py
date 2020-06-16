@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template
 from Project.heatmap_generator import generate_heatmaps
+from Project.SQL.Data_Extract import SQLDatabase
 
 app = Flask(__name__)
 app.debug = True

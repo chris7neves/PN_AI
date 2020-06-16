@@ -4,6 +4,7 @@
 
 #IMPORTS
 import pyodbc
+from datetime import datetime
 
 
 class SQLDatabase:
@@ -13,10 +14,11 @@ class SQLDatabase:
         self.username = username
         self.password = password
         self.drivers = pyodbc.drivers()
+        self.connection = pyodbc.connect('DRIVER=' + self.drivers[0] + ';SERVER=' + self.server + ';DATABASE=' + self.database + ';UID=' + self.username + ';PWD=' + self.password)
 
     def query(self, string):
-        cnxn = pyodbc.connect('DRIVER='+self.drivers[0]+';SERVER='+self.server+';DATABASE='+self.database+';UID='+self.username+';PWD='+self.password)
-        cursor = cnxn.cursor()
+        connection = self.connection
+        cursor = connection.cursor()
         # Sample select query
         cursor.execute(string)
         row_array = []
@@ -29,8 +31,8 @@ class SQLDatabase:
         return row_array
 
     def participants(self):
-        cnxn = pyodbc.connect('DRIVER=' + self.drivers[0] + ';SERVER=' + self.server + ';DATABASE=' + self.database + ';UID=' + self.username + ';PWD=' + self.password)
-        cursor = cnxn.cursor()
+        connection = self.connection
+        cursor = connection.cursor()
         cursor.execute("select * from data_headers")
         row_array = []
         while True:
@@ -42,8 +44,8 @@ class SQLDatabase:
         return row_array
 
     def results(self, H_AUTO):
-        cnxn = pyodbc.connect('DRIVER=' + self.drivers[0] + ';SERVER=' + self.server + ';DATABASE=' + self.database + ';UID=' + self.username + ';PWD=' + self.password)
-        cursor = cnxn.cursor()
+        connection = self.connection
+        cursor = connection.cursor()
         cursor.execute(f"select * from data_trials where H_AUTO_KEY = {H_AUTO}")
         row_array = []
         while True:
@@ -55,8 +57,8 @@ class SQLDatabase:
         return row_array
 
     def eye_tracker_data(self, T_AUTO):
-        cnxn = pyodbc.connect('DRIVER=' + self.drivers[0] + ';SERVER=' + self.server + ';DATABASE=' + self.database + ';UID=' + self.username + ';PWD=' + self.password)
-        cursor = cnxn.cursor()
+        connection = self.connection
+        cursor = connection.cursor()
         cursor.execute(f"select * from data_details where T_AUTO_KEY = {T_AUTO}")
         row_array = []
         while True:
@@ -68,10 +70,10 @@ class SQLDatabase:
         return row_array
 
     def execute_statement(self, string):
-        cnxn = pyodbc.connect('DRIVER=' + self.drivers[0] + ';SERVER=' + self.server + ';DATABASE=' + self.database + ';UID=' + self.username + ';PWD=' + self.password)
-        cursor = cnxn.cursor()
+        connection = self.connection
+        cursor = connection.cursor()
         cursor.execute(string)
-        cnxn.commit()
+        connection.commit()
 
     def user_input_results(self, H_AUTO_KEY):
         string = f"""select
@@ -93,8 +95,8 @@ class SQLDatabase:
         T8_S
         from DATA_TRIALS
         where h_auto_key = {H_AUTO_KEY}"""
-        cnxn = pyodbc.connect('DRIVER='+self.drivers[0]+';SERVER='+self.server+';DATABASE='+self.database+';UID='+self.username+';PWD='+self.password)
-        cursor = cnxn.cursor()
+        connection = self.connection
+        cursor = connection.cursor()
         # Sample select query
         cursor.execute(string)
         row_array = []
@@ -122,8 +124,8 @@ class SQLDatabase:
         
         OFFSET (select min(stamp_order) from data_details where time_data <> -1 and time_data <> 0 and h_auto_key = 1000081 and t_auto_key = 1000680 and trial_num = 1) ROWS
         FETCH NEXT 1200 ROWS ONLY;"""
-        cnxn = pyodbc.connect('DRIVER='+self.drivers[0]+';SERVER='+self.server+';DATABASE='+self.database+';UID='+self.username+';PWD='+self.password)
-        cursor = cnxn.cursor()
+        connection = self.connection
+        cursor = connection.cursor()
         # Sample select query
         cursor.execute(string)
         row_array = []
@@ -138,7 +140,7 @@ class SQLDatabase:
     def coordinate_data(self, participant_name, trial_name, trial_number):
 
         conditions = "x_data > 0.05 and x_data < 0.95 and y_data > 0.05 and y_data < 0.95 and time_data <> -1 and time_data <> 0"
-        connection = pyodbc.connect('DRIVER=' + self.drivers[0] + ';SERVER=' + self.server + ';DATABASE=' + self.database + ';UID=' + self.username + ';PWD=' + self.password)
+        connection = self.connection
         cursor = connection.cursor()
 
         H_AUTO_KEY = cursor.execute(f"select H_AUTO_KEY from DATA_HEADERS where T_NAME = '{participant_name}'").fetchone()[0]
@@ -149,11 +151,3 @@ class SQLDatabase:
         y_data = [xy[1] for xy in x_y_data]
 
         return x_data, y_data
-
-
-
-
-
-
-
-
