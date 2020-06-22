@@ -19,10 +19,10 @@ T_NOTES = sheet.cell_value(6, 2)
 
 sSQL = f"insert into data_headers(T_NAME,T_AGE,T_GENDER,T_NOTES) values('{T_NAME}',{T_AGE},'{T_GENDER}','{T_NOTES}')"
 
-P1 = Data_Extract.SQL_Database('26.105.85.122', 'PNLab', 'adm', 'massimo123')
+P1 = Data_Extract.SQLDatabase('26.105.85.122', 'PNLab', 'adm', 'massimo123')
 P1.execute_statement(sSQL)
 
-array = P1.Query('select max(h_auto_key) from data_headers')
+array = P1.query('select max(h_auto_key) from data_headers')
 h_auto_key = array[0][0]
 
 for s in wb.sheets():
@@ -66,7 +66,7 @@ for s in wb.sheets():
                    f"{T1_S},{T2_S},{T3_S},{T4_S},{T5_S},{T6_S},{T7_S},{T8_S},{h_auto_key})"
 
             P1.execute_statement(sSQL)
-            array = P1.Query('select max(t_auto_key) from data_trials')
+            array = P1.query('select max(t_auto_key) from data_trials')
             t_auto_key = array[0][0]
 
             for j in range(1, 8):
