@@ -4,6 +4,7 @@ import openpyxl
 from scipy.ndimage.filters import gaussian_filter
 import os
 import re
+import seaborn as sns
 
 import filesystem
 
@@ -34,6 +35,37 @@ def generate_scatter_plot(wb, excel_file_name, sheet_number):
     fig.suptitle(f"Test subject {excel_file_name} - {TRIAL_TYPES[sheet_number - 1]}")
     plt.show()
 
+def generate_heatmap_image_seaborn(wb, excel_file_name, sheet_number, trial_number):
+    """Generates heatmap image of the trial being searched."""
+
+    xmin, xmax = -0.2, 1.2
+    ymin, ymax = -0.2, 1.2
+
+    # Specifies excel row and column start of data depending on trial selected.
+    row_start = 18
+    column_start = 16 + (trial_number - 1) * 3
+    image_filepath = f"Images/{excel_file_name}/{TRIAL_TYPES[sheet_number-1]}_Trial{trial_number}.png"
+
+    worksheet = wb[f'Sheet{sheet_number}']
+    success, x, y = get_coordinate_arrays(worksheet, row_start, column_start)
+
+    # Seaborn Heatmap
+
+
+    if success:
+        try:
+            ax = sns.kdeplot(x, y, cmap='Greys', shade=True, shade_lowest=False)
+        except:
+            logging.print_and_log(
+                f"Unable to generate heatmap for {excel_file_name} - Sheet: {sheet_number} Trial: {trial_number}")
+            return
+        ax.set_frame_on(False)
+        plt.axis('off')
+        fig = ax.get_figure()
+        fig.savefig(image_filepath, transparent=False, bbox_inches='tight', pad_inches=0)
+        plt.close()
+    else:
+        logging.print_and_log(f"Unable to generate heatmap for {excel_file_name} - Sheet: {sheet_number} Trial: {trial_number}")
 
 def generate_heatmap_image(wb, excel_file_name, sheet_number, trial_number):
     """Generates heatmap image of the trial being searched."""
@@ -92,6 +124,11 @@ def get_coordinate_arrays(worksheet, row_start, column_start):
 
     return x_coordinate_array and y_coordinate_array, np.array(x_coordinate_array), np.array(y_coordinate_array)
 
+def get_hm_img(hm_type, wb, file_name, sheet_number, trial_number):
+    if hm_type.lower() == 'm':
+        return generate_heatmap_image(wb, file_name, sheet_number, trial_number)
+    elif hm_type.lower() == 's':
+        return generate_heatmap_image_seaborn(wb, file_name, sheet_number, trial_number)
 
 def heatmap_cli():
     """Command-line interface for generating either a scatter-plot of all trials for a specific or generate
@@ -111,6 +148,10 @@ def heatmap_cli():
     # -------------HEAT MAP GENERATOR--------------
     heat_map = input("Would you like to generate all heatmap images for a specific test subject in the 'Images' folder\n"
                      "NOTE: Doesn't work on mac and 88 images are generated!! Y/N\n")
+
+    heat_map_type = input("Enter m for standard heatmap or s for seaborn heatmaps:")
+
+
 
     if heat_map.lower() == 'y':
         logging.print_and_log("-----------HEAT MAP GENERATOR-----------")
@@ -136,7 +177,7 @@ def heatmap_cli():
                         for sheet_number in range(1, 12):
                             for trial_number in range(1, 9):
                                 logging.print_and_log(f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
-                                generate_heatmap_image(wb, file_name, sheet_number, trial_number)
+                                get_hm_img(heat_map_type, wb, file_name, sheet_number, trial_number)
 
                         wb.close()
         else:
@@ -148,7 +189,7 @@ def heatmap_cli():
             for sheet_number in range(1, 12):
                 for trial_number in range(1, 9):
                     logging.print_and_log(f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
-                    generate_heatmap_image(wb, excel_file, sheet_number, trial_number)
+                    get_hm_img(heat_map_type, wb, excel_file, sheet_number, trial_number)
 
             wb.close()
 
