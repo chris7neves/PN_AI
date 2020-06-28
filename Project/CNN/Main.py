@@ -24,7 +24,7 @@ batch_sz = 10
 
 ######### Data Initialization #########
 
-nonsplit_data, nonsplit_label = etl.create_non_split(etl.img_folder_path, balance=False)
+nonsplit_data, nonsplit_label = etl.create_non_split(etl.img_folder_path, balance=True)
 
 print(f"Nonsplit Dataset Shape: {nonsplit_data.shape}")
 print(f"Nonsplit Label Shape: {nonsplit_label.shape}")
@@ -87,7 +87,7 @@ test_loader = etl.get_dataloader(test_dset, batch_sz=batch_size, shuff=True)
 
 count = 0
 print("Starting training...")
-for epoch in range(10): #TODO: write function to automatically go to next epoch once progress of current epoch plateaus
+for epoch in range(30): #TODO: write function to automatically go to next epoch once progress of current epoch plateaus
     total_loss = 0
     total_correct = 0
     total_guessed = 0
@@ -133,9 +133,11 @@ with torch.no_grad():
         test_images, test_labels = batch
         test_images = test_images.to(device)
         test_labels = test_labels.to(device)
+
         preds = BasicCNN(test_images)
         all_preds = torch.cat((all_preds, preds.type(torch.uint8)), dim=0)
         all_labels = torch.cat((all_labels, test_labels.type(torch.uint8)), dim=0)
+
     tot_correct = Utilities.get_num_correct(all_preds, all_labels)
     accuracy = tot_correct/(all_labels.shape[0])
     print(f"Total correct: {tot_correct}  out of {(all_labels.shape[0])} guesses.")
