@@ -10,7 +10,7 @@ from enum import Enum
 
 import filesystem
 
-from Project.SQL.Data_Extract import SQLDatabase
+from SQL.Data_Extract import SQLDatabase
 
 
 class DataSource(Enum):
@@ -233,34 +233,34 @@ def heatmap_cli():
         excel_file = input("Enter the Excel file name from the Data folder you would like to generate heatmaps for or enter 'a' to generate heatmaps for all trials in data folder:\n")
 
 
-                        logging.print_and_log(f"Starting to generate heatmap files to directory /images/{file_name}")
-                        print(f"Generating heatmaps for {file_name} ...")
+        logging.print_and_log(f"Starting to generate heatmap files to directory /images/{excel_file}")
+        print(f"Generating heatmaps for {excel_file} ...")
 
-                        wb = openpyxl.load_workbook(f'data/{file}')
-                        filesystem.ensure_filepath_exists(f"images/{file_name}/")
+        wb = openpyxl.load_workbook(f'data/{excel_file}')
+        filesystem.ensure_filepath_exists(f"images/{excel_file}/")
 
-                        for sheet_number in range(1, 12):
-                            for trial_number in range(1, 9):
-                                logging.print_and_log(f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
-                                get_hm_img(heat_map_type, wb, file_name, sheet_number, trial_number)
+        for sheet_number in range(1, 12):
+            for trial_number in range(1, 9):
+                logging.print_and_log(f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
+                get_hm_img(heat_map_type, wb, excel_file, sheet_number, trial_number)
 
-                        wb.close()
-        else:
-            logging.print_and_log(f"Starting to generate heatmap files to directory /images/{excel_file}")
+        wb.close()
+    else:
+        logging.print_and_log(f"Starting to generate heatmap files to directory /images/{excel_file}")
 
-            wb = openpyxl.load_workbook(f'data/{excel_file}.xlsm')
-            filesystem.ensure_filepath_exists(f"images/{excel_file}/")
+        wb = openpyxl.load_workbook(f'data/{excel_file}.xlsm')
+        filesystem.ensure_filepath_exists(f"images/{excel_file}/")
 
-            for sheet_number in range(1, 12):
-                for trial_number in range(1, 9):
-                    logging.print_and_log(f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
-                    get_hm_img(heat_map_type, wb, excel_file, sheet_number, trial_number)
+        for sheet_number in range(1, 12):
+            for trial_number in range(1, 9):
+                logging.print_and_log(f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
+                get_hm_img(heat_map_type, wb, excel_file, sheet_number, trial_number)
 
-            wb.close()
+        wb.close()
 
 
 
-        logging.print_and_log(f"Finished generating heatmap files.")
+    logging.print_and_log(f"Finished generating heatmap files.")
 
 
 if __name__ == "__main__":
