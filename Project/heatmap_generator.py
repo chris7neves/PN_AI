@@ -10,7 +10,7 @@ from enum import Enum
 
 import filesystem
 
-from Project.SQL.Data_Extract import SQLDatabase
+from SQL.Data_Extract import SQLDatabase
 
 
 class DataSource(Enum):
@@ -18,7 +18,7 @@ class DataSource(Enum):
     Excel = 2
 
 
-GENERATED_FROM = DataSource.SQL
+GENERATED_FROM = DataSource.Excel
 if GENERATED_FROM == DataSource.SQL:
     SQL_CONNECTION = SQLDatabase(filesystem.os.environ["PNAI_SERVER"],
                                  filesystem.os.environ["PNAI_DATABASE"],
@@ -152,12 +152,23 @@ def get_coordinate_arrays(worksheet, row_start, column_start):
     return x_coordinate_array and y_coordinate_array, np.array(x_coordinate_array), np.array(y_coordinate_array)
 
 def get_hm_img(hm_type, wb, file_name, sheet_number, trial_number):
+    """
+    Handles the selection of which heatmap is to be generated. Returns either a standard heatmap or seaborn
+    heatmap.
+
+    :param hm_type: heatmap type user wishes to generate
+    :param wb: openpyxl workbook object
+    :param file_name: name of file, or 'a' for all
+    :param sheet_number: sheet number to be generated
+    :param trial_number: trial number to be generated
+    :return: returns a heatmap of the chosen type
+    """
     if hm_type.lower() == 'm':
         return generate_heatmap_image(wb, file_name, sheet_number, trial_number)
     elif hm_type.lower() == 's':
         return generate_heatmap_image_seaborn(wb, file_name, sheet_number, trial_number)
 
-def generate_heatmaps(file_name):
+def generate_heatmaps(file_name, hm_type):
 
     wb = None
 
@@ -182,7 +193,7 @@ def generate_heatmaps(file_name):
 
                     for sheet_number in range(1, 12):
                         for trial_number in range(1, 9):
-                            generate_heatmap_image(wb, file_name, sheet_number, trial_number)
+                            get_hm_img(hm_type, wb, file_name, sheet_number, trial_number)
 
                     if GENERATED_FROM == DataSource.Excel:
                         wb.close()
@@ -197,7 +208,7 @@ def generate_heatmaps(file_name):
 
         for sheet_number in range(1, 12):
             for trial_number in range(1, 9):
-                generate_heatmap_image(wb, file_name, sheet_number, trial_number)
+                get_hm_img(hm_type, wb, file_name, sheet_number, trial_number)
 
         if GENERATED_FROM == DataSource.Excel:
             wb.close()
@@ -232,35 +243,9 @@ def heatmap_cli():
 
         excel_file = input("Enter the Excel file name from the Data folder you would like to generate heatmaps for or enter 'a' to generate heatmaps for all trials in data folder:\n")
 
+        generate_heatmaps(excel_file, heat_map_type)
 
-                        logging.print_and_log(f"Starting to generate heatmap files to directory /images/{file_name}")
-                        print(f"Generating heatmaps for {file_name} ...")
-
-                        wb = openpyxl.load_workbook(f'data/{file}')
-                        filesystem.ensure_filepath_exists(f"images/{file_name}/")
-
-                        for sheet_number in range(1, 12):
-                            for trial_number in range(1, 9):
-                                logging.print_and_log(f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
-                                get_hm_img(heat_map_type, wb, file_name, sheet_number, trial_number)
-
-                        wb.close()
-        else:
-            logging.print_and_log(f"Starting to generate heatmap files to directory /images/{excel_file}")
-
-            wb = openpyxl.load_workbook(f'data/{excel_file}.xlsm')
-            filesystem.ensure_filepath_exists(f"images/{excel_file}/")
-
-            for sheet_number in range(1, 12):
-                for trial_number in range(1, 9):
-                    logging.print_and_log(f"Successfully generated Sheet: {sheet_number} | Trial: {trial_number}")
-                    get_hm_img(heat_map_type, wb, excel_file, sheet_number, trial_number)
-
-            wb.close()
-
-
-
-        logging.print_and_log(f"Finished generating heatmap files.")
+    logging.print_and_log(f"Finished generating heatmap files.")
 
 
 if __name__ == "__main__":
