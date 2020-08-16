@@ -23,3 +23,6 @@ CapstoneNeuralNet/Dependencies/*
 *.env
 *.exe
 
+# SQL Credentials
+Connection_information.txt
+connection_information.txt
