@@ -16,10 +16,12 @@ class ResponseDataset(Dataset):  # https://stanford.edu/~shervine/blog/pytorch-h
         # Make initial query to find out all excel files in Database
         All_Excel_Files = SQLObject.Participants()
 
+
         # Start Loop through the Excel Files
-        i = 0
+        index = 0
         for ExcelFile in All_Excel_Files:
-            print(i)
+            ResultsArray = []
+            print(index)
             # We want to see if the subject is ASD or TYP
             if ExcelFile[4] == 'ASD':
                 print("ASD")
@@ -27,18 +29,44 @@ class ResponseDataset(Dataset):  # https://stanford.edu/~shervine/blog/pytorch-h
             else:
                 IsASD = [[1, 0]]
 
+            # We want to grab the Age
+            Age = ExcelFile[2]
+
+            # We want to grab the Sex
+            if ExcelFile[3] == 'M':
+                Sex = 1
+            else:
+                Sex = 0
+
             print(ExcelFile[1])
-            if ExcelFile[1] == 'A008' or ExcelFile[1] == 'A011' or ExcelFile[1] == 'A026' or ExcelFile[1] == 'A028' or\
-               ExcelFile[1] == 'A034' or ExcelFile[1] == 'A006':
+            if ExcelFile[1] == 'A008' or ExcelFile[1] == 'A011' or ExcelFile[1] == 'A026' or ExcelFile[1] == 'A028' or \
+                    ExcelFile[1] == 'A034' or ExcelFile[1] == 'A006':
+                continue
+
+            if Age <= 10:
                 continue
 
             # Now we will query the data regarding the subject's inputs for each trial
             Results = SQLObject.UserInputResults(ExcelFile[0])
 
             # Prep Data (divide times by 10)
+
+            ResultsArray = np.insert(ResultsArray, len(ResultsArray), Age)
+            ResultsArray = np.insert(ResultsArray, len(ResultsArray), Sex)
+
             for Set in Results:
-                for x in range(8, 16):
-                    Set[x] = Set[x] / 10.0
+                TotalCorrect = 0
+                TotalTime = 0
+                for i in range(0, 8):
+                    TotalCorrect = TotalCorrect + Set[i]
+                    TotalTime = TotalTime + Set[8 + i]
+                CorrectAverage = TotalCorrect / 8
+                TimeAverage = TotalTime / 80  # 8 * 10
+                for j in range(8, 16):
+                    Set[j] = Set[j] / 10.0
+                #ResultsArray = np.concatenate((ResultsArray, CorrectAverage, TimeAverage), axis=0)
+                ResultsArray = np.insert(ResultsArray, len(ResultsArray), CorrectAverage)
+                ResultsArray = np.insert(ResultsArray, len(ResultsArray), TimeAverage)
 
             # Concatenate them all together
             array = np.concatenate((Results[0],
@@ -54,21 +82,19 @@ class ResponseDataset(Dataset):  # https://stanford.edu/~shervine/blog/pytorch-h
                                    Results[10],))
 
             #Beging building our tensor
-            InputTensor = torch.tensor([array], dtype=torch.float)
+            InputTensor = torch.tensor([ResultsArray], dtype=torch.float)
             # OutputTensor = torch.tensor(IsASD, dtype=torch.float)
-            if i == 0:
-                self.Input = torch.tensor([array], dtype=torch.float)
+            if index == 0:
+                self.Input = torch.tensor([ResultsArray], dtype=torch.float)
                 outputArray = np.array(IsASD)
                 # self.Output = torch.tensor(IsASD, dtype=torch.float)
             else:
                 self.Input = torch.cat((self.Input, InputTensor), 0)
                 #self.Output = torch.cat((self.Output, OutputTensor), 0)
                 outputArray = np.append(outputArray, IsASD, axis=0)
-            i = i + 1
-            # print(self.Input)
-            # print(outputArray)
-        self.Output = torch.tensor(outputArray, dtype=torch.float)
+            index = index + 1
 
+        self.Output = torch.tensor(outputArray, dtype=torch.float)
         self.InputDimensions = self.Input.size()
         self.OutputDimensions = self.Output.size()
         print("Data Acquisition Complete")
@@ -80,3 +106,57 @@ class ResponseDataset(Dataset):  # https://stanford.edu/~shervine/blog/pytorch-h
         input_data = self.Input[index]
         output_data = self.Output[index]
         return input_data, output_data
+
+    def GetScatterData(self):
+        outputArray = [[0, 0, 0]]
+        # connect to the database
+        SQLObject = Data_Extract.SQL_Database(filesystem.os.environ["PNAI_SERVER"],
+                                       filesystem.os.environ["PNAI_DATABASE"],
+                                       filesystem.os.environ["PNAI_USERNAME"],
+                                       filesystem.os.environ["PNAI_PASSWORD"])
+
+        # Make initial query to find out all excel files in Database
+        All_Excel_Files = SQLObject.Participants()
+
+        # Start Loop through the Excel Files
+        i = 0
+        totalASD = 0
+        totalTYP = 0
+        for ExcelFile in All_Excel_Files:
+            print(i)
+            # We want to see if the subject is ASD or TYP
+            if ExcelFile[4] == 'ASD':
+                print("ASD")
+                IsASD = 1
+                totalASD = totalASD + 1
+            else:
+                IsASD = 0
+                totalTYP = totalTYP + 1
+
+            age = ExcelFile[2]
+
+            print(ExcelFile[1])
+            if ExcelFile[1] == 'A008' or ExcelFile[1] == 'A011' or ExcelFile[1] == 'A026' or ExcelFile[1] == 'A028' or\
+               ExcelFile[1] == 'A034' or ExcelFile[1] == 'A006':
+                continue
+
+            # Now we will query the data regarding the subject's inputs for each trial
+            Results = SQLObject.UserInputResults(ExcelFile[0])
+
+            # Find number of correct answers
+            correctCounter = 0
+            # Prep Data (divide times by 10)
+            for Set in Results:
+                for x in range(1, 8):
+                    if Set[x] == 1:
+                        correctCounter = correctCounter + 1
+
+            if i == 0:
+                outputArray = np.array([[IsASD, correctCounter, age]])
+            else:
+                outputArray = np.append(outputArray, [[IsASD, correctCounter, age]], axis=0)
+            i = i + 1
+
+            print(f'Total ASD: {totalASD}')
+            print(f'Total TYP: {totalTYP}')
+        return outputArray

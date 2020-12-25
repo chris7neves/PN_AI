@@ -8,6 +8,8 @@ import numpy as np
 from datetime import datetime
 from collections import OrderedDict
 
+import matplotlib.pyplot as plt
+
 # https://towardsdatascience.com/building-neural-network-using-pytorch-84f6e75f9a
 # https://towardsdatascience.com/training-a-neural-network-using-pytorch-72ab708da210
 # https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
@@ -109,7 +111,7 @@ class ANN(nn.Module):
         print(f"floored split {split}")
 
         if shuffle:
-           np.random.seed(datetime.now())
+           np.random.seed(42)
            np.random.shuffle(indices)
         train_indices, val_indices = indices[split:], indices[:split]
 
@@ -119,6 +121,51 @@ class ANN(nn.Module):
         self.trainloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=train_sampler)
         self.validationloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, sampler=valid_sampler)
 
+
+    def EDA(self, Data):
+        asd_samples_y = [[-99]]
+        asd_samples_x = [[-99]]
+        non_asd_samples_y = [[-99]]
+        non_asd_samples_x = [[-99]]
+
+        loopcounter = 0
+        for Sample in Data:
+            if Sample[0] == 1:
+                if asd_samples_y[0][0] < 0:
+                    asd_samples_y[0][0] = Sample[1]
+                    asd_samples_x[0][0] = Sample[2]
+                else:
+                    asd_samples_y = np.append(asd_samples_y, [[Sample[1]]], axis=0)
+                    asd_samples_x = np.append(asd_samples_x, [[Sample[2]]], axis=0)
+            else:
+                if non_asd_samples_y[0][0] < 0:
+                    non_asd_samples_y[0][0] = Sample[1]
+                    non_asd_samples_x[0][0] = Sample[2]
+                else:
+                    non_asd_samples_y = np.append(non_asd_samples_y, [[Sample[1]]], axis=0)
+                    non_asd_samples_x = np.append(non_asd_samples_x, [[Sample[2]]], axis=0)
+            loopcounter = loopcounter + 1
+
+        #[[ASD,#correct], ]
+        # for sample in Data:
+        #     sample
+
+        # plt.scatter(grades_range, girls_grades, color='r', label='girls')
+        # plt.scatter(grades_range, boys_grades, color='b', label='boys')
+
+        plt.scatter(asd_samples_x, asd_samples_y, color='r', label=f'ASD = {len(asd_samples_x)}')
+        plt.scatter(non_asd_samples_x, non_asd_samples_y, color='b', label=f'Non-ASD = {len(non_asd_samples_x)}')
+        plt.legend(loc='upper left', frameon=True)
+        # naming the x axis
+        plt.xlabel('Age')
+        # naming the y axis
+        plt.ylabel('Correct Responses')
+
+        # giving a title to my graph
+        plt.title('ASD vs Non-ASD correct Responses vs Age Eye Tracker Experiment')
+
+        # function to show the plot
+        plt.show()
 
 
 
