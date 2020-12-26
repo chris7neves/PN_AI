@@ -32,7 +32,8 @@ directory = cwd.replace('\\CNN', '')
 img_folder_path = os.path.join(directory, img_folder_name)
 print("Looking in directory: " + img_folder_path)
 
-def create_non_split(images_path):
+
+def create_non_split(images_path, balance=True):
     """Creates a non split set for split set validation purposes"""
     print("Storing images")
     data_feature_list = []
@@ -52,40 +53,49 @@ def create_non_split(images_path):
                     data_feature_list.append(np.array(cv2.imread(img_path,0)))
                     data_label_list.append(label)
 
-    data_feature_list_np = np.array(data_feature_list)
-    data_label_list_np = np.array(data_label_list, dtype=np.uint8)
+    feature_np = np.array(data_feature_list)
+    label_np = np.array(data_label_list, dtype=np.uint8)
 
-    print("Images stored as Numpy Arrays.")
+    #TODO: Maybe implement balancing to achieve 1:1 between labels
+    if balance:
+        ones = sum([i == 1 for i in label_np])
+        zeros = len(label_np) - ones
+        pic_buffer = None
 
-    return data_feature_list_np, data_label_list_np
+        if ones > zeros:
+            count = 0
+            for i, label in enumerate(label_np):
+                if count <= (ones-zeros) and label == 0:
+                    if pic_buffer is None:
+                        pic_buffer = np.copy(np.expand_dims(feature_np[i], axis=0))
+                        count += 1
+                    else:
+                        temp = np.copy(np.expand_dims(feature_np[i], axis=0))
+                        pic_buffer = np.append(pic_buffer, temp, axis=0)
+                        count += 1
+            feature_np = np.append(feature_np, pic_buffer, axis=0)
+            label_np = np.append(label_np, np.zeros((count,), dtype=np.uint8))
+        elif zeros > ones:
+            count = 0
+            for i, label in enumerate(label_np):
+                if count <= (zeros-ones) and label == 1:
+                    if pic_buffer is None:
+                        pic_buffer = np.copy(np.expand_dims(feature_np[i], axis=0))
+                        count += 1
+                    else:
+                        temp = np.copy(np.expand_dims(feature_np[i], axis=0))
+                        pic_buffer = np.append(pic_buffer, temp, axis=0)
+                        count += 1
+            feature_np = np.append(feature_np, pic_buffer, axis=0)
+            label_np = np.append(label_np, np.ones((count,), dtype=np.uint8))
 
-def create_train_test(images_path, to_tensor=False):
-    print("Storing images")
-    data_feature_list = []
-    data_label_list = []
-    for root, dirs, files in os.walk(images_path, topdown=True):  # convert pic to array and append to list
-        for directory in dirs:
-            subdir_path = os.path.join(root, directory)
-            if directory[0] == 'A':
-                label = 1  # 1 is the label for ASD "A"
-            elif directory[0] == 'T':
-                label = 0  # 0 is the label for TYP "T"
-            else:
-                # log the error here
-                print("There was an error with" + str(directory)) # This is a placeholder print statement. This error should be logged
-            for _, _, subdir_files in os.walk(subdir_path, topdown=True):
-                for file in subdir_files:
-                    img_path = os.path.join(img_folder_path, directory, file)
-                    data_feature_list.append(np.array(cv2.imread(img_path,0)))
-                    data_label_list.append(label)
+    return feature_np, label_np
 
-    data_feature_list_np = np.array(data_feature_list)
-    data_label_list_np = np.array(data_label_list, dtype=np.uint8)
 
-    print("Images stored as Numpy Arrays.")
+def split_train_test(features, labels, to_tensor=False, ratio=0.3):
 
-    feat_train, feat_test, label_train, label_test  = train_test_split(data_feature_list_np, data_label_list_np,
-                                                                      test_size=0.3, stratify=data_label_list_np)
+    feat_train, feat_test, label_train, label_test  = train_test_split(features, labels,
+                                                                      test_size=ratio, stratify=labels)
 
     if to_tensor:
         return torch.from_numpy(label_train), torch.from_numpy(

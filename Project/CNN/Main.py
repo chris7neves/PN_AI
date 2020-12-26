@@ -24,9 +24,14 @@ batch_sz = 10
 
 ######### Data Initialization #########
 
-nonsplit_data, nonsplit_label = etl.create_non_split(etl.img_folder_path)
+nonsplit_data, nonsplit_label = etl.create_non_split(etl.img_folder_path, balance=True)
 
-split_train_label, split_test_label, split_train_data, split_test_data = etl.create_train_test(etl.img_folder_path, to_tensor=False)
+print(f"Nonsplit Dataset Shape: {nonsplit_data.shape}")
+print(f"Nonsplit Label Shape: {nonsplit_label.shape}")
+
+split_train_label, split_test_label, split_train_data, split_test_data = etl.split_train_test(nonsplit_data
+                                                                                              , nonsplit_label
+                                                                                              , to_tensor=False)
 
 ######### Data Verification #########
 
@@ -67,10 +72,7 @@ img_name = "im1 Label: {}".format(im1_label)
 
 print("Shape of test dset: {}".format(test_dset.data.shape))
 
-
 ########## Training the CNN ##########
-
-
 
 torch.set_grad_enabled(True)
 
@@ -78,28 +80,30 @@ BasicCNN = net.basicCNN().to(device)
 
 
 optimizer = optim.Adam(BasicCNN.parameters(), lr=0.001)
-batch_size = 10
+batch_size = 20
+
 train_loader = etl.get_dataloader(train_dset, batch_sz=batch_size, shuff=True)
 test_loader = etl.get_dataloader(test_dset, batch_sz=batch_size, shuff=True)
+
 count = 0
 print("Starting training...")
-for epoch in range(10): #TODO: write function to automatically go to next epoch once progress of current epoch plateaus
+for epoch in range(30): #TODO: write function to automatically go to next epoch once progress of current epoch plateaus
     total_loss = 0
     total_correct = 0
     total_guessed = 0
     for i, batch in enumerate(train_loader):
         print("Epoch:{}".format(epoch), "batch:{}".format(i), 'START')
         images, labels = batch
-        im_gpu = images.to(device)
-        lab_gpu = labels.to(device)
+        img_gpu = images.to(device)
+        labels_gpu = labels.to(device)
 
         print(images.shape)
         #predictions = BasicCNN(images)
-        predictions = BasicCNN(im_gpu)
+        predictions = BasicCNN(img_gpu)
 
         print("Calculating loss...")
         #loss = F.cross_entropy(predictions, labels.long()) # Calculates the loss function using cross entropy
-        loss = F.cross_entropy(predictions, lab_gpu.long())
+        loss = F.cross_entropy(predictions, labels_gpu.long())
 
         print(f"Loss: {loss}")
         print("Resetting gradients...")
@@ -113,8 +117,7 @@ for epoch in range(10): #TODO: write function to automatically go to next epoch 
 
         total_loss += loss.item()
         #total_correct += Utilities.get_num_correct(predictions, labels)
-        total_correct += Utilities.get_num_correct(predictions, lab_gpu)
-
+        total_correct += Utilities.get_num_correct(predictions, labels_gpu)
 
         total_guessed += images.shape[0]
 
@@ -123,3 +126,19 @@ for epoch in range(10): #TODO: write function to automatically go to next epoch 
 
     print("Epoch:{}".format(epoch), "Total loss:{}\n\n".format(total_loss))
 
+with torch.no_grad():
+    all_preds = torch.tensor([], dtype=torch.uint8).to(device)
+    all_labels = torch.tensor([], dtype=torch.uint8).to(device)
+    for batch in test_loader:
+        test_images, test_labels = batch
+        test_images = test_images.to(device)
+        test_labels = test_labels.to(device)
+
+        preds = BasicCNN(test_images)
+        all_preds = torch.cat((all_preds, preds.type(torch.uint8)), dim=0)
+        all_labels = torch.cat((all_labels, test_labels.type(torch.uint8)), dim=0)
+
+    tot_correct = Utilities.get_num_correct(all_preds, all_labels)
+    accuracy = tot_correct/(all_labels.shape[0])
+    print(f"Total correct: {tot_correct}  out of {(all_labels.shape[0])} guesses.")
+    print(f"End accuracy: {accuracy}")

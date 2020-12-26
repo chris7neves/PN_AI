@@ -26,3 +26,8 @@ CapstoneNeuralNet/Dependencies/*
 #Misc
 *.pth
 *.bak
+
+# SQL Credentials
+Connection_information.txt
+connection_information.txt
+

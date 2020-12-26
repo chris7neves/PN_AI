@@ -8,13 +8,13 @@ class ResponseDataset(Dataset):  # https://stanford.edu/~shervine/blog/pytorch-h
     def __init__(self):
         outputArray = [[0, 0]]
         # connect to the database
-        SQLObject = Data_Extract.SQL_Database(filesystem.os.environ["PNAI_SERVER"],
-                                       filesystem.os.environ["PNAI_DATABASE"],
-                                       filesystem.os.environ["PNAI_USERNAME"],
-                                       filesystem.os.environ["PNAI_PASSWORD"])
+        SQLObject = Data_Extract.SQLDatabase(filesystem.os.environ["PNAI_SERVER"],
+                                             filesystem.os.environ["PNAI_DATABASE"],
+                                             filesystem.os.environ["PNAI_USERNAME"],
+                                             filesystem.os.environ["PNAI_PASSWORD"])
 
         # Make initial query to find out all excel files in Database
-        All_Excel_Files = SQLObject.Participants()
+        All_Excel_Files = SQLObject.participants()
 
 
         # Start Loop through the Excel Files
@@ -47,7 +47,7 @@ class ResponseDataset(Dataset):  # https://stanford.edu/~shervine/blog/pytorch-h
                 continue
 
             # Now we will query the data regarding the subject's inputs for each trial
-            Results = SQLObject.UserInputResults(ExcelFile[0])
+            Results = SQLObject.user_input_results(ExcelFile[0])
 
             # Prep Data (divide times by 10)
 

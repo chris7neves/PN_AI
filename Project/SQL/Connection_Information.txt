@@ -1,4 +1,0 @@
-RADMIN VPN
-Join Network
-Network Name: TESTPN
-Password	: massimo
